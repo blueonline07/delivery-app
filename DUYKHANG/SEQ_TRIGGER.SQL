@@ -1,0 +1,31 @@
+
+CREATE OR ALTER TRIGGER Sequentiality
+ON TUYEN
+FOR INSERT
+AS
+BEGIN
+	DECLARE @stt INT
+	DECLARE @xa VARCHAR(50)
+	DECLARE @huyen VARCHAR(50)
+	DECLARE @tinh VARCHAR(50)
+	DECLARE @chitiet VARCHAR(50)
+	
+	DECLARE @pXa VARCHAR(50)
+	DECLARE @pHuyen VARCHAR(50)
+	DECLARE @pTinh VARCHAR(50)
+	DECLARE @pChitiet VARCHAR(50)
+	
+	SELECT @xa = XA_BD, @huyen = HUYEN_BD, @tinh = TINH_BD, @chitiet = CHITIET_BD FROM INSERTED;
+	SELECT @pXa = TUYEN.XA_KT, @pHuyen = TUYEN.HUYEN_KT, @pTinh = TUYEN.TINH_KT, @pChitiet = TUYEN.CHITIET_KT, @stt = TUYEN.STT
+	FROM TUYEN, INSERTED
+	WHERE TUYEN.STT IN ((SELECT MAX(STT) FROM TUYEN GROUP BY (MADONHANG)) - 1)
+	-- STT - 1 VI` TRIGGER XAY RA SAU KHI INSERT
+	AND TUYEN.MADONHANG = INSERTED.MADONHANG;
+--	PRINT  'prev: ' + @pChitiet + ' ' + 'start: ' + @chitiet;
+--	PRINT  @stt;
+	IF (@tinh != @pTinh OR @huyen != @pHuyen OR @xa != @pXa OR @chitiet != @pChitiet)
+	BEGIN
+		RAISERROR ('Start and end point doesnt match', 16, 1);
+		ROLLBACK;
+	END
+END

@@ -1,0 +1,32 @@
+INSERT INTO NGUOIDUNG 
+VALUES ('0123456789', 'test@gmail.com', 'LE DUY KHANG', '2004-01-12', 'qwerty', 'M')
+
+INSERT INTO KHACHHANG 
+VALUES ('0123456789', 'Thai Binh', 'Chau Thanh', 'Tay Ninh', '748')
+
+INSERT INTO DONHANG
+VALUES ('0123456789',0, '9876543210', 'KHANG DUY LE', 'DELIVERING', 100, '2024-11-18', '0000000001', 'Dong Hoa', 'Di An', 'Binh Duong', '999')
+
+INSERT INTO TUYEN
+VALUES ('DELIVERING', 1, '0000000001', 'Suoi Muon', 'Chau Thanh', 'Tay Ninh', '748', 'Phuong 1', 'Thi Xa', 'Tay Ninh', 'Tram 1')
+
+INSERT INTO TUYEN
+VALUES ('DELIVERING', 2, '0000000001', 'Phuong 1', 'Thi Xa', 'Tay Ninh', 'Tram 1', 'Phuong 1', 'Thi Xa', 'Tay Ninh', 'Tram 2')
+
+INSERT INTO TUYEN
+VALUES ('DELIVERING', 3, '0000000001', 'Phuong 1', 'Thi Xa', 'Tay Ninh', 'Tram 2', 'Phuong 1', 'Thi Xa', 'Tay Ninh', 'Tram 3')
+
+DELETE FROM TUYEN
+WHERE MADONHANG = '0000000001'
+
+SELECT MAX(STT) FROM TUYEN GROUP BY (MADONHANG)
+
+SELECT * FROM TUYEN 
+WHERE STT IN (SELECT MAX(STT)  FROM TUYEN GROUP BY (MADONHANG))
+
+
+
+
+
+
+
