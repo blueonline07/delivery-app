@@ -20,6 +20,8 @@ BEGIN
 END;
 GO
 
+-- Cac bang lien quan den nguoi` dung, tram va cac thuc the vat ly khac
+
 CREATE TABLE NguoiDung (
 	sdt CHAR(10) PRIMARY KEY, ---mobilephone only
   	email VARCHAR(50),
@@ -66,6 +68,7 @@ CREATE TABLE NhanVien (
 CREATE TABLE TaiXe (
     sdt CHAR(10) PRIMARY KEY,
     kinhNghiem INT,
+    CONSTRAINT driverExp_check CHECK (kinhNghiem >= 0),
     CONSTRAINT phoneDriver_fk FOREIGN KEY(sdt) REFERENCES NhanVien(sdt) ON DELETE CASCADE ON UPDATE CASCADE,
 );
 
@@ -114,6 +117,8 @@ CREATE TABLE TramLamViec(
     CONSTRAINT stationWorkAt_fk FOREIGN KEY(tram) REFERENCES Tram(stt) ON DELETE CASCADE
 );
 
+---- cac bang lien quan den business logic (don hang, hoa don, ...)
+
 CREATE TABLE DonHang (
     maDonHang CHAR(10) PRIMARY KEY,        
     nguoiTaoDon CHAR(10),
@@ -131,7 +136,7 @@ CREATE TABLE DonHang (
 
 CREATE TABLE GoiHang (
     donHang CHAR(10),
-    stt INT IDENTITY(1,1),
+    stt INT,
     canNang DECIMAL(10, 2),
     CONSTRAINT m_check CHECK (canNang > 0),
     moTa NVARCHAR(100),
@@ -142,7 +147,7 @@ CREATE TABLE GoiHang (
 CREATE TABLE Tuyen(
     donHang CHAR(10),
     CONSTRAINT routeOrd_fk FOREIGN KEY (donHang) REFERENCES DonHang(maDonHang) ON DELETE CASCADE,
-    stt INT IDENTITY(1,1),
+    stt INT,
     PRIMARY KEY(donHang, stt),
     tinhTrang NVARCHAR(20),
     CONSTRAINT routeStt_check CHECK (tinhTrang = 'Hoàn thành' OR tinhTrang = 'Chưa hoàn thành'),
