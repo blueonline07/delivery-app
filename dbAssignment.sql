@@ -138,6 +138,7 @@ CREATE TABLE GoiHang (
     donHang CHAR(10),
     stt INT,
     canNang DECIMAL(10, 2),
+    gia DECIMAL(10, 2),
     CONSTRAINT m_check CHECK (canNang > 0),
     moTa NVARCHAR(100),
     CONSTRAINT pkgOrd_fk FOREIGN KEY(donHang) REFERENCES DonHang(maDonHang) ON DELETE CASCADE,
