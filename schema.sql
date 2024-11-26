@@ -126,7 +126,7 @@ CREATE TABLE DonHang (
     sdtNguoiNhan CHAR(10),
     hoTenNguoiNhan NVARCHAR(50),     
     tinhTrang NVARCHAR(10), 
-    CONSTRAINT ordStt_check CHECK (tinhTrang = N'Đã giao' OR tinhTrang = N'Đang giao' OR tinhTrang = N'Đã huỷ'),
+    CONSTRAINT ordStt_check CHECK (tinhTrang = N'Đã giao' OR tinhTrang = N'Đang giao' OR tinhTrang = N'Đã huỷ' OR tinhTrang = N'Chưa xuất đơn' OR tinhTrang = N'Đang xử lý' ),
     ngayTao DATE,                    
     xa NVARCHAR(20),           
     huyen NVARCHAR(20),             
