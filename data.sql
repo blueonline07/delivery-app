@@ -103,6 +103,11 @@ INSERT INTO GoiHang VALUES
 ('DH004', 1, 4.5, 100000, N'Hàng cồng kềnh'),
 ('DH005', 1, 2.0, 40000, N'Hàng dễ vỡ');
 
+-- data for test procedure
+-- INSERT INTO GoiHang Values ('DH001', 2, 2.5, 50000, N'Hàng dễ vỡ')
+-- INSERT INTO GoiHang Values ('DH002', 3, 7.0, 20000, N'Hàng nguy hiểm')
+
+
 -- Insert data into Tuyen
 INSERT INTO Tuyen VALUES 
 ('DH001', 1, N'Hoàn thành', N'Phường 1', N'Quận 1', N'TP HCM', N'123 Đường ABC', N'Phường 2', N'Quận 2', N'TP HCM', N'456 Đường DEF'),
@@ -158,3 +163,4 @@ INSERT INTO ThanhToan VALUES
 ('HD003', 'DH003'),
 ('HD004', 'DH004'),
 ('HD005', 'DH005');
+

@@ -1,6 +1,9 @@
-CREATE DATABASE delivery;
+IF NOT EXISTS (SELECT * FROM sys.databases WHERE name = 'delivery')
+BEGIN
+    CREATE DATABASE delivery;
+END;
+GO
 USE delivery;
-
 GO
 CREATE FUNCTION calc_age
 (
@@ -19,6 +22,8 @@ BEGIN
     RETURN @age
 END;
 GO
+
+
 
 -- Cac bang lien quan den nguoi` dung, tram va cac thuc the vat ly khac
 
@@ -134,6 +139,8 @@ CREATE TABLE DonHang (
     chiTiet NVARCHAR(30)            
 );
 
+SELECT * FROM DonHang;
+
 CREATE TABLE GoiHang (
     donHang CHAR(10),
     stt INT,
@@ -144,6 +151,25 @@ CREATE TABLE GoiHang (
     CONSTRAINT pkgOrd_fk FOREIGN KEY(donHang) REFERENCES DonHang(maDonHang) ON DELETE CASCADE,
     PRIMARY KEY (donHang, stt)
 );
+
+SELECT * FROM GoiHang;
+
+DROP PROCEDURE IF EXISTS GetGoiHangDetails;
+
+CREATE PROCEDURE GetGoiHangDetails
+    @donHang CHAR(10),
+    @minCanNang DECIMAL(10, 2)
+AS
+BEGIN
+    SELECT gh.donHang, gh.stt, gh.canNang, gh.gia, gh.moTa, dh.hoTenNguoiNhan, dh.tinhTrang
+    FROM GoiHang gh
+    JOIN DonHang dh ON gh.donHang = dh.maDonHang
+    WHERE gh.donHang = @donHang AND gh.canNang >= @minCanNang
+    ORDER BY gh.canNang ASC ;
+END;
+
+EXEC GetGoiHangDetails 'DH002', 0.9;
+
 
 CREATE TABLE Tuyen(
     donHang CHAR(10),
@@ -200,6 +226,23 @@ CREATE TABLE HoaDon (
     tinhTrang NVARCHAR(20),
     CONSTRAINT billStt_check CHECK (tinhTrang = N'Đã thanh toán' OR tinhTrang = N'Chưa thanh toán')
 );
+
+DROP PROCEDURE IF EXISTS GetHoaDonWithGiaoDich;
+
+-- procedure of HoaDon
+CREATE PROCEDURE GetHoaDonWithGiaoDich
+    @tinhTrang NVARCHAR(20)
+AS
+BEGIN
+    SELECT hd.maHoaDon, hd.tongTien, hd.tinhTrang, gd.maGiaoDich, gd.soTien, gd.thoiDiem
+    FROM HoaDon hd
+    JOIN GiaoDich gd ON hd.maHoaDon = gd.hoaDon
+    WHERE hd.tinhTrang = @tinhTrang
+    ORDER BY hd.tongTien ASC;
+END;
+
+-- EXEC GetHoaDonWithGiaoDich N'Đã thanh toán';
+
 
 CREATE TABLE GiaoDich(
     maGiaoDich CHAR(10) PRIMARY KEY,
