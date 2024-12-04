@@ -228,21 +228,23 @@ CREATE TABLE HoaDon (
 );
 
 DROP PROCEDURE IF EXISTS GetHoaDonWithGiaoDich;
+GO
 
--- procedure of HoaDon
 CREATE PROCEDURE GetHoaDonWithGiaoDich
-    @tinhTrang NVARCHAR(20)
+    @startTime DATETIME,
+    @endTime DATETIME
 AS
 BEGIN
     SELECT hd.maHoaDon, hd.tongTien, hd.tinhTrang, gd.maGiaoDich, gd.soTien, gd.thoiDiem
     FROM HoaDon hd
     JOIN GiaoDich gd ON hd.maHoaDon = gd.hoaDon
-    WHERE hd.tinhTrang = @tinhTrang
+    WHERE gd.thoiDiem BETWEEN @startTime AND @endTime
     ORDER BY hd.tongTien ASC;
 END;
+GO
 
--- EXEC GetHoaDonWithGiaoDich N'Đã thanh toán';
-
+-- Example
+EXEC GetHoaDonWithGiaoDich '2023-01-01 00:00:00', '2023-12-31 23:59:59';
 
 CREATE TABLE GiaoDich(
     maGiaoDich CHAR(10) PRIMARY KEY,
