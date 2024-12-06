@@ -183,37 +183,16 @@ BEGIN CATCH
 END CATCH
 
 
-
--- DROP PROCEDURE IF EXISTS GetGoiHangDetails;
-
-CREATE PROCEDURE GetGoiHangDetails
-    @donHang CHAR(10),
-    @minCanNang DECIMAL(10, 2)
+-- 1.2.3: DonHang and GoiHang
+CREATE OR ALTER PROCEDURE getDonHang @sdt CHAR (10), @minCanNang DECIMAL(10,2), @minNgayTao DATE, @maxNgayTao DATE
 AS
 BEGIN
-    SELECT gh.donHang, gh.stt, gh.canNang, gh.gia, gh.moTa, dh.hoTenNguoiNhan, dh.tinhTrang
-    FROM GoiHang gh
-    JOIN DonHang dh ON gh.donHang = dh.maDonHang
-    WHERE gh.donHang = @donHang AND gh.canNang >= @minCanNang
-    ORDER BY gh.canNang ASC ;
+	SELECT maDonHang, ngayTao, hoTenNguoiNhan, sdtNguoiNhan, xa, huyen, tinh, chiTiet, tinhTrang, SUM(canNang) AS tongCanNang
+	FROM DonHang AS D, GoiHang AS G
+	WHERE D.maDonHang = G.donHang AND nguoiTaoDon = @sdt AND ngayTao >= @minNgayTao AND ngayTao <= @maxNgayTao
+	GROUP BY D.maDonHang, ngayTao, hoTenNguoiNhan, sdtNguoiNhan, xa, huyen, tinh, chiTiet, tinhTrang
+	HAVING SUM(canNang) >= @minCanNang
+	ORDER BY ngayTao, SUM(canNang)
 END;
 
--- EXEC GetGoiHangDetails 'DH002', 0.9;
-
-
--- DROP PROCEDURE IF EXISTS GetHoaDonWithGiaoDich;
-GO
-CREATE PROCEDURE GetHoaDonWithGiaoDich
-    @startTime DATETIME,
-    @endTime DATETIME
-AS
-BEGIN
-    SELECT hd.maHoaDon, hd.tongTien, hd.tinhTrang, gd.maGiaoDich, gd.soTien, gd.thoiDiem
-    FROM HoaDon hd
-    JOIN GiaoDich gd ON hd.maHoaDon = gd.hoaDon
-    WHERE gd.thoiDiem BETWEEN @startTime AND @endTime
-    ORDER BY hd.tongTien ASC;
-END;
-GO
-
--- EXEC GetHoaDonWithGiaoDich '2023-01-01 00:00:00', '2023-12-31 23:59:59';
+EXEC getDonHang '0123456789', 2.0, '20110618', '20241201'  
