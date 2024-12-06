@@ -165,6 +165,42 @@ EXEC add_pkg 'DH00000001', N'Hâhhaa', 10000, 'A01,A02'
 
 -- DELETE FROM GoiHang WHERE donHang = 'DH00000001' AND stt = 2
 
+
+-- DROP PROCEDURE IF EXISTS GetGoiHangDetails;
+
+    CREATE PROCEDURE GetGoiHangDetails
+        @donHang CHAR(10),
+        @minCanNang DECIMAL(10, 2)
+    AS
+    BEGIN
+        SELECT gh.donHang, gh.stt, gh.canNang, gh.gia, gh.moTa, dh.hoTenNguoiNhan, dh.tinhTrang
+        FROM GoiHang gh
+                 JOIN DonHang dh ON gh.donHang = dh.maDonHang
+        WHERE gh.donHang = @donHang AND gh.canNang >= @minCanNang
+        ORDER BY gh.canNang ASC ;
+    END;
+
+-- EXEC GetGoiHangDetails 'DH002', 0.9;
+
+
+-- DROP PROCEDURE IF EXISTS GetHoaDonWithGiaoDich;
+GO
+CREATE PROCEDURE GetHoaDonWithGiaoDich
+    @startTime DATETIME,
+    @endTime DATETIME
+AS
+BEGIN
+    SELECT hd.maHoaDon, hd.tongTien, hd.tinhTrang, gd.maGiaoDich, gd.soTien, gd.thoiDiem
+    FROM HoaDon hd
+             JOIN GiaoDich gd ON hd.maHoaDon = gd.hoaDon
+    WHERE gd.thoiDiem BETWEEN @startTime AND @endTime
+    ORDER BY hd.tongTien ASC;
+END;
+GO
+
+-- EXEC GetHoaDonWithGiaoDich '2023-01-01 00:00:00', '2023-12-31 23:59:59';
+
+
 GO
 CREATE OR ALTER PROCEDURE rm_pkg
     @order CHAR(10), @stt INT
@@ -195,4 +231,7 @@ BEGIN
 	ORDER BY ngayTao, SUM(canNang)
 END;
 
-EXEC getDonHang '0123456789', 2.0, '20110618', '20241201'  
+EXEC getDonHang '0123456789', 2.0, '20110618', '20241201'
+
+
+
