@@ -181,3 +181,39 @@ END TRY
 BEGIN CATCH
     PRINT ERROR_MESSAGE();
 END CATCH
+
+
+
+-- DROP PROCEDURE IF EXISTS GetGoiHangDetails;
+
+CREATE PROCEDURE GetGoiHangDetails
+    @donHang CHAR(10),
+    @minCanNang DECIMAL(10, 2)
+AS
+BEGIN
+    SELECT gh.donHang, gh.stt, gh.canNang, gh.gia, gh.moTa, dh.hoTenNguoiNhan, dh.tinhTrang
+    FROM GoiHang gh
+    JOIN DonHang dh ON gh.donHang = dh.maDonHang
+    WHERE gh.donHang = @donHang AND gh.canNang >= @minCanNang
+    ORDER BY gh.canNang ASC ;
+END;
+
+-- EXEC GetGoiHangDetails 'DH002', 0.9;
+
+
+-- DROP PROCEDURE IF EXISTS GetHoaDonWithGiaoDich;
+GO
+CREATE PROCEDURE GetHoaDonWithGiaoDich
+    @startTime DATETIME,
+    @endTime DATETIME
+AS
+BEGIN
+    SELECT hd.maHoaDon, hd.tongTien, hd.tinhTrang, gd.maGiaoDich, gd.soTien, gd.thoiDiem
+    FROM HoaDon hd
+    JOIN GiaoDich gd ON hd.maHoaDon = gd.hoaDon
+    WHERE gd.thoiDiem BETWEEN @startTime AND @endTime
+    ORDER BY hd.tongTien ASC;
+END;
+GO
+
+-- EXEC GetHoaDonWithGiaoDich '2023-01-01 00:00:00', '2023-12-31 23:59:59';
