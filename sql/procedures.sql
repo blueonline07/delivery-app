@@ -181,3 +181,18 @@ END TRY
 BEGIN CATCH
     PRINT ERROR_MESSAGE();
 END CATCH
+
+
+-- 1.2.3: DonHang and GoiHang
+CREATE OR ALTER PROCEDURE getDonHang @sdt CHAR (10), @minCanNang DECIMAL(10,2), @minNgayTao DATE, @maxNgayTao DATE
+AS
+BEGIN
+	SELECT maDonHang, ngayTao, hoTenNguoiNhan, sdtNguoiNhan, xa, huyen, tinh, chiTiet, tinhTrang, SUM(canNang) AS tongCanNang
+	FROM DonHang AS D, GoiHang AS G
+	WHERE D.maDonHang = G.donHang AND nguoiTaoDon = @sdt AND ngayTao >= @minNgayTao AND ngayTao <= @maxNgayTao
+	GROUP BY D.maDonHang, ngayTao, hoTenNguoiNhan, sdtNguoiNhan, xa, huyen, tinh, chiTiet, tinhTrang
+	HAVING SUM(canNang) >= @minCanNang
+	ORDER BY ngayTao, SUM(canNang)
+END;
+
+EXEC getDonHang '0123456789', 2.0, '20110618', '20241201'  
