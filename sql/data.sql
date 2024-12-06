@@ -1,166 +1,151 @@
+-- Thêm dữ liệu vào bảng NguoiDung
+INSERT INTO NguoiDung VALUES
+('0123456789', 'khang.le@gmail.com', N'Lê Duy Khang', '2000-01-12', 'matkhau123', N'Nam'),
+('0987654321', 'mai.anh@gmail.com', N'Trần Mai Anh', '1995-07-23', 'matkhau456', N'Nữ'),
+('0912345678', 'quang.manager@gmail.com', N'Nguyễn Hữu Quang', '1980-10-05', 'matkhauadmin', N'Nam'),
+('0976543210', 'tuan.hoang@gmail.com', N'Hoàng Tuấn', '1993-06-15', 'password789', N'Nam'),
+('0908765432', 'lan.nguyen@gmail.com', N'Nguyễn Lan', '1988-09-08', 'securepass123', N'Nữ');
 
--- Insert data into NguoiDung
-INSERT INTO NguoiDung VALUES 
-('0123456789', 'khang@gmail.com', N'Lê Duy Khang', '2004-01-12', '123', N'Nam'),
-('0123456788', 'minh@gmail.com', N'Nguyễn Văn Minh', '1990-05-20', '123', N'Nam'),
-('0123456787', 'hoa@gmail.com', N'Phạm Thị Hoa', '1985-03-15', '123', N'Nữ'),
-('0123456786', 'linh@gmail.com', N'Trần Thị Linh', '1995-07-22', '123', N'Nữ'),
-('0123456785', 'son@gmail.com', N'Hoàng Văn Sơn', '2000-11-30', '123', N'Nam');
+-- Thêm dữ liệu vào bảng KhachHang
+INSERT INTO KhachHang VALUES
+('0123456789', N'Phường 5', N'Quận 1', N'TP HCM', N'Số 12, Đường A'),
+('0987654321', N'Phường 7', N'Quận Bình Thạnh', N'TP HCM', N'Số 45, Đường B'),
+('0912345678', N'Phường 3', N'Quận Gò Vấp', N'TP HCM', N'Số 78, Đường C'),
+('0976543210', N'Phường 9', N'Quận Tân Bình', N'TP HCM', N'Số 23, Đường D'),
+('0908765432', N'Phường 12', N'Quận 5', N'TP HCM', N'Số 67, Đường E');
 
--- Insert data into BanBe
-INSERT INTO BanBe VALUES 
-('0123456789', '0123456788'),
-('0123456789', '0123456787'),
-('0123456788', '0123456787'),
-('0123456786', '0123456785'),
-('0123456785', '0123456789');
+-- Thêm dữ liệu vào bảng NhanVien
+INSERT INTO NhanVien VALUES
+('0912345678', 7000000, '2015-08-01'),
+('0976543210', 8000000, '2017-05-14'),
+('0908765432', 7500000, '2016-11-21'),
+('0123456789', 6500000, '2018-03-09'),
+('0987654321', 7200000, '2019-06-10');
 
--- Insert data into KhachHang
-INSERT INTO KhachHang VALUES 
-('0123456789', N'Phường 1', N'Quận 1', N'TP HCM', N'123 Đường ABC'),
-('0123456788', N'Phường 2', N'Quận 2', N'TP HCM', N'456 Đường DEF'),
-('0123456787', N'Phường 3', N'Quận 3', N'TP HCM', N'789 Đường GHI'),
-('0123456786', N'Phường 4', N'Quận 4', N'TP HCM', N'101 Đường JKL'),
-('0123456785', N'Phường 5', N'Quận 5', N'TP HCM', N'112 Đường MNO');
+-- Thêm dữ liệu vào bảng TaiXe
+INSERT INTO TaiXe VALUES
+('0912345678', 5),
+('0976543210', 3),
+('0908765432', 7),
+('0123456789', 4),
+('0987654321', 6);
 
--- Insert data into NhanVien
-INSERT INTO NhanVien VALUES 
-('0123456789', 5000000, '2020-01-01'),
-('0123456788', 4000000, '2019-05-15'),
-('0123456787', 6000000, '2018-03-10'),
-('0123456786', 7000000, '2021-07-20'),
-('0123456785', 8000000, '2022-11-30');
+-- Thêm dữ liệu vào bảng Xe
+INSERT INTO Xe VALUES
+('59A-12345', '0912345678'),
+('59A-54321', '0976543210'),
+('59A-67890', '0908765432'),
+('59A-11223', '0123456789'),
+('59A-33245', '0987654321');
 
--- Insert data into TaiXe
-INSERT INTO TaiXe VALUES 
-('0123456789', 2),
-('0123456788', 3),
-('0123456787', 1),
-('0123456786', 5),
-('0123456785', 4);
+-- Thêm dữ liệu vào bảng BangLai
+INSERT INTO BangLai VALUES
+('0912345678', 'A2', '2025-12-31'),
+('0976543210', 'A1', '2024-11-30'),
+('0908765432', 'A2', '2026-02-28'),
+('0123456789', 'A1', '2025-01-15'),
+('0987654321', 'A2', '2027-06-20');
 
--- Insert data into Xe
-INSERT INTO Xe VALUES 
-('79A-12345', '0123456789'),
-('79A-67890', '0123456788'),
-('79A-11111', '0123456787'),
-('79A-22222', '0123456786'),
-('79A-33333', '0123456785');
-
--- Insert data into BangLai
-INSERT INTO BangLai VALUES 
-('0123456789', 'A1', '2025-01-01'),
-('0123456788', 'A2', '2024-05-15'),
-('0123456787', 'A1', '2023-03-10'),
-('0123456786', 'A2', '2026-07-20'),
-('0123456785', 'A1', '2027-11-30');
-
--- Insert data into NguoiQuanLy
-INSERT INTO NguoiQuanLy VALUES 
+-- Thêm dữ liệu vào bảng NguoiQuanLy
+INSERT INTO NguoiQuanLy VALUES
+('0912345678'),
+('0976543210'),
+('0908765432'),
 ('0123456789'),
-('0123456788'),
-('0123456787'),
-('0123456786'),
-('0123456785');
+('0987654321');
 
--- Insert data into CapBac
-INSERT INTO CapBac VALUES 
+-- Thêm dữ liệu vào bảng CapBac
+INSERT INTO CapBac VALUES
+('0912345678', N'Quản lý cấp cao'),
+('0976543210', N'Quản lý cấp trung'),
+('0908765432', N'Quản lý cấp thấp'),
 ('0123456789', N'Quản lý cấp cao'),
-('0123456788', N'Quản lý trung cấp'),
-('0123456787', N'Quản lý cấp thấp'),
-('0123456786', N'Quản lý cấp cao'),
-('0123456785', N'Quản lý trung cấp');
+('0987654321', N'Quản lý cấp trung');
 
--- Insert data into Tram
-INSERT INTO Tram VALUES 
-('0123456789', N'Phường 1', N'Quận 1', N'TP HCM', N'123 Đường ABC'),
-('0123456788', N'Phường 2', N'Quận 2', N'TP HCM', N'456 Đường DEF'),
-('0123456787', N'Phường 3', N'Quận 3', N'TP HCM', N'789 Đường GHI'),
-('0123456786', N'Phường 4', N'Quận 4', N'TP HCM', N'101 Đường JKL'),
-('0123456785', N'Phường 5', N'Quận 5', N'TP HCM', N'112 Đường MNO');
+-- Thêm dữ liệu vào bảng Tram
+INSERT INTO Tram VALUES
+('0912345678', N'Phường 5', N'Quận 1', N'TP HCM', N'Số 12, Đường A'),
+('0976543210', N'Phường 7', N'Quận Bình Thạnh', N'TP HCM', N'Số 45, Đường B'),
+('0908765432', N'Phường 3', N'Quận Gò Vấp', N'TP HCM', N'Số 78, Đường C'),
+('0123456789', N'Phường 9', N'Quận Tân Bình', N'TP HCM', N'Số 23, Đường D'),
+('0987654321', N'Phường 12', N'Quận 5', N'TP HCM', N'Số 67, Đường E');
 
--- Insert data into TramLamViec
-INSERT INTO TramLamViec VALUES 
-('0123456789', 1),
-('0123456788', 2),
-('0123456787', 3),
-('0123456786', 4),
-('0123456785', 5);
+-- Thêm dữ liệu vào bảng TramLamViec
+INSERT INTO TramLamViec VALUES
+('0912345678', 1),
+('0976543210', 2),
+('0908765432', 3),
+('0123456789', 4),
+('0987654321', 5);
 
--- Insert data into DonHang
-INSERT INTO DonHang VALUES 
-('DH001', '0123456789', '0123456788', N'Nguyễn Văn A', N'Đã giao', '2023-01-01', N'Phường 1', N'Quận 1', N'TP HCM', N'123 Đường ABC'),
-('DH002', '0123456788', '0123456787', N'Nguyễn Văn B', N'Đang giao', '2023-02-01', N'Phường 2', N'Quận 2', N'TP HCM', N'456 Đường DEF'),
-('DH003', '0123456787', '0123456786', N'Nguyễn Văn C', N'Đã huỷ', '2023-03-01', N'Phường 3', N'Quận 3', N'TP HCM', N'789 Đường GHI'),
-('DH004', '0123456786', '0123456785', N'Nguyễn Văn D', N'Đã giao', '2023-04-01', N'Phường 4', N'Quận 4', N'TP HCM', N'101 Đường JKL'),
-('DH005', '0123456785', '0123456789', N'Nguyễn Văn E', N'Đang giao', '2023-05-01', N'Phường 5', N'Quận 5', N'TP HCM', N'112 Đường MNO');
+-- Thêm dữ liệu vào bảng DonHang
+INSERT INTO DonHang VALUES
+('DH00000001', '0123456789', '0987654321', N'Trần Mai Anh', N'Đang giao', DEFAULT, N'Phường 9', N'Quận Phú Nhuận', N'TP HCM', N'Số 11, Đường D'),
+('DH00000002', '0912345678', '0976543210', N'Hoàng Tuấn', N'Đã giao', DEFAULT, N'Phường 5', N'Quận 1', N'TP HCM', N'Số 12, Đường A'),
+('DH00000003', '0987654321', '0908765432', N'Nguyễn Lan', N'Đang giao', DEFAULT, N'Phường 7', N'Quận Bình Thạnh', N'TP HCM', N'Số 45, Đường B'),
+('DH00000004', '0976543210', '0912345678', N'Lê Duy Khang', N'Đã huỷ', DEFAULT, N'Phường 3', N'Quận Gò Vấp', N'TP HCM', N'Số 78, Đường C'),
+('DH00000005', '0908765432', '0987654321', N'Trần Mai Anh', N'Đang giao', DEFAULT, N'Phường 12', N'Quận 5', N'TP HCM', N'Số 67, Đường E');
 
--- Insert data into GoiHang
-INSERT INTO GoiHang VALUES 
-('DH001', 1, 2.5, 50000, N'Hàng dễ vỡ'),
-('DH002', 1, 1.0, 20000, N'Hàng nhẹ'),
-('DH003', 1, 3.0, 70000, N'Hàng nặng'),
-('DH004', 1, 4.5, 100000, N'Hàng cồng kềnh'),
-('DH005', 1, 2.0, 40000, N'Hàng dễ vỡ');
+-- Thêm dữ liệu vào bảng GoiHang
+INSERT INTO GoiHang VALUES
+('DH00000001', 1, 5, 200000, N'Hộp quà nhỏ'),
+('DH00000002', 1, 3, 150000, N'Túi xách thời trang'),
+('DH00000003', 1, 10, 500000, N'Máy tính xách tay'),
+('DH00000004', 1, 8, 300000, N'Điện thoại di động'),
+('DH00000005', 1, 4, 100000, N'Sách vở học sinh');
 
--- data for test procedure
--- INSERT INTO GoiHang Values ('DH001', 2, 2.5, 50000, N'Hàng dễ vỡ')
--- INSERT INTO GoiHang Values ('DH002', 3, 7.0, 20000, N'Hàng nguy hiểm')
+-- Thêm dữ liệu vào bảng Tuyen
+INSERT INTO Tuyen VALUES
+('DH00000001', 1, N'Hoàn thành', N'Phường 1', N'Quận 3', N'TP HCM', N'Số 5, Đường E', N'Phường 9', N'Quận Phú Nhuận', N'TP HCM', N'Số 11, Đường D'),
+('DH00000002', 1, N'Chưa hoàn thành', N'Phường 5', N'Quận 1', N'TP HCM', N'Số 12, Đường A', N'Phường 5', N'Quận 1', N'TP HCM', N'Số 12, Đường A'),
+('DH00000003', 1, N'Hoàn thành', N'Phường 7', N'Quận Bình Thạnh', N'TP HCM', N'Số 45, Đường B', N'Phường 7', N'Quận Bình Thạnh', N'TP HCM', N'Số 45, Đường B'),
+('DH00000004', 1, N'Chưa hoàn thành', N'Phường 3', N'Quận Gò Vấp', N'TP HCM', N'Số 78, Đường C', N'Phường 3', N'Quận Gò Vấp', N'TP HCM', N'Số 78, Đường C'),
+('DH00000005', 1, N'Hoàn thành', N'Phường 12', N'Quận 5', N'TP HCM', N'Số 67, Đường E', N'Phường 12', N'Quận 5', N'TP HCM', N'Số 67, Đường E');
 
+-- Thêm dữ liệu vào bảng DamNhan
+INSERT INTO DamNhan VALUES
+('DH00000001', 1, 1, '0912345678'),
+('DH00000002', 1, 2, '0976543210'),
+('DH00000003', 1, 3, '0908765432'),
+('DH00000004', 1, 4, '0123456789'),
+('DH00000005', 1, 5, '0987654321');
 
--- Insert data into Tuyen
-INSERT INTO Tuyen VALUES 
-('DH001', 1, N'Hoàn thành', N'Phường 1', N'Quận 1', N'TP HCM', N'123 Đường ABC', N'Phường 2', N'Quận 2', N'TP HCM', N'456 Đường DEF'),
-('DH002', 1, N'Chưa hoàn thành', N'Phường 2', N'Quận 2', N'TP HCM', N'456 Đường DEF', N'Phường 3', N'Quận 3', N'TP HCM', N'789 Đường GHI'),
-('DH003', 1, N'Hoàn thành', N'Phường 3', N'Quận 3', N'TP HCM', N'789 Đường GHI', N'Phường 4', N'Quận 4', N'TP HCM', N'101 Đường JKL'),
-('DH004', 1, N'Chưa hoàn thành', N'Phường 4', N'Quận 4', N'TP HCM', N'101 Đường JKL', N'Phường 5', N'Quận 5', N'TP HCM', N'112 Đường MNO'),
-('DH005', 1, N'Hoàn thành', N'Phường 5', N'Quận 5', N'TP HCM', N'112 Đường MNO', N'Phường 1', N'Quận 1', N'TP HCM', N'123 Đường ABC');
+-- Thêm dữ liệu vào bảng NhanGoiHang
+INSERT INTO NhanGoiHang VALUES
+('A01', N'Hàng dễ vỡ', 50000),
+('A02', N'Hàng hóa cao cấp', 80000),
+('A03', N'Sản phẩm điện tử', 120000),
+('A04', N'Thuốc men', 30000),
+('A05', N'Thực phẩm', 60000);
 
--- Insert data into DamNhan
-INSERT INTO DamNhan VALUES 
-('DH001', 1, 1, '0123456789'),
-('DH002', 1, 2, '0123456788'),
-('DH003', 1, 3, '0123456787'),
-('DH004', 1, 4, '0123456786'),
-('DH005', 1, 5, '0123456785');
+-- Thêm dữ liệu vào bảng DuocGan
+INSERT INTO DuocGan VALUES
+('DH00000001', 1, 'A01'),
+('DH00000002', 1, 'A02'),
+('DH00000003', 1, 'A03'),
+('DH00000004', 1, 'A04'),
+('DH00000005', 1, 'A05');
 
--- Insert data into NhanGoiHang
-INSERT INTO NhanGoiHang VALUES 
-('N01', N'Hàng dễ vỡ'),
-('N02', N'Hàng nhẹ'),
-('N03', N'Hàng nặng'),
-('N04', N'Hàng cồng kềnh'),
-('N05', N'Hàng dễ vỡ');
+-- Thêm dữ liệu vào bảng HoaDon
+INSERT INTO HoaDon VALUES
+('HD00000001', 250000, N'Chưa thanh toán'),
+('HD00000002', 450000, N'Chưa thanh toán'),
+('HD00000003', 350000, N'Đã thanh toán'),
+('HD00000004', 200000, N'Chưa thanh toán'),
+('HD00000005', 500000, N'Đã thanh toán');
 
--- Insert data into DuocGan
-INSERT INTO DuocGan VALUES 
-('DH001', 1, 'N01'),
-('DH002', 1, 'N02'),
-('DH003', 1, 'N03'),
-('DH004', 1, 'N04'),
-('DH005', 1, 'N05');
+-- Thêm dữ liệu vào bảng GiaoDich
+INSERT INTO GiaoDich VALUES
+('GD00000001', 'HD00000001', 250000, '2024-12-01 14:30:00', N'Tiền mặt', N'Thành công'),
+('GD00000002', 'HD00000002', 450000, '2024-12-02 10:00:00', N'Chuyển khoản', N'Thành công'),
+('GD00000003', 'HD00000003', 350000, '2024-12-03 16:15:00', N'Tiền mặt', N'Thành công'),
+('GD00000004', 'HD00000004', 200000, '2024-12-04 11:45:00', N'Tiền mặt', N'Thất bại'),
+('GD00000005', 'HD00000005', 500000, '2024-12-05 13:20:00', N'Chuyển khoản', N'Thành công');
 
--- Insert data into HoaDon
-INSERT INTO HoaDon VALUES 
-('HD001', 50000, N'Đã thanh toán'),
-('HD002', 20000, N'Chưa thanh toán'),
-('HD003', 70000, N'Đã thanh toán'),
-('HD004', 100000, N'Chưa thanh toán'),
-('HD005', 40000, N'Đã thanh toán');
-
--- Insert data into GiaoDich
-INSERT INTO GiaoDich VALUES 
-('GD001', 'HD001', 50000, '2023-01-01 10:00:00', N'Tiền mặt', N'Thành công'),
-('GD002', 'HD002', 20000, '2023-02-01 11:00:00', N'Thẻ', N'Thất bại'),
-('GD003', 'HD003', 70000, '2023-03-01 12:00:00', N'Chuyển khoản NH', N'Thành công'),
-('GD004', 'HD004', 100000, '2023-04-01 13:00:00', N'Tiền mặt', N'Thất bại'),
-('GD005', 'HD005', 40000, '2023-05-01 14:00:00', N'Thẻ', N'Thành công');
-
--- Insert data into ThanhToan
-INSERT INTO ThanhToan VALUES 
-('HD001', 'DH001'),
-('HD002', 'DH002'),
-('HD003', 'DH003'),
-('HD004', 'DH004'),
-('HD005', 'DH005');
-
+-- Thêm dữ liệu vào bảng ThanhToan
+INSERT INTO ThanhToan VALUES
+('HD00000001', 'DH00000001'),
+('HD00000002', 'DH00000002'),
+('HD00000003', 'DH00000003'),
+('HD00000004', 'DH00000004'),
+('HD00000005', 'DH00000005');
