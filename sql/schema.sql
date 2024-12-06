@@ -123,22 +123,22 @@ CREATE TABLE DonHang (
     maDonHang CHAR(10) PRIMARY KEY,        
     nguoiTaoDon CHAR(10),
     CONSTRAINT cusOrder_fk FOREIGN KEY(nguoiTaoDon) REFERENCES KhachHang(sdt) ON DELETE CASCADE ON UPDATE CASCADE,           
-    sdtNguoiNhan CHAR(10),
-    hoTenNguoiNhan NVARCHAR(50),     
-    tinhTrang NVARCHAR(10), 
-    CONSTRAINT ordStt_check CHECK (tinhTrang = N'Đã giao' OR tinhTrang = N'Đang giao' OR tinhTrang = N'Đã huỷ'),
-    ngayTao DATE,                    
-    xa NVARCHAR(20),           
-    huyen NVARCHAR(20),             
-    tinh NVARCHAR(20),              
+    sdtNguoiNhan CHAR(10) NOT NULL,
+    hoTenNguoiNhan NVARCHAR(50) NOT NULL,     
+    tinhTrang NVARCHAR(10) DEFAULT N'Đang giao', 
+    CONSTRAINT ordStt_check CHECK (tinhTrang = N'Đã giao' OR tinhTrang = N'Đang giao' OR tinhTrang = N'Đã huỷ') ,
+    ngayTao DATE DEFAULT GETDATE(),                    
+    xa NVARCHAR(20) NOT NULL,           
+    huyen NVARCHAR(20) NOT NULL,             
+    tinh NVARCHAR(20) NOT NULL,              
     chiTiet NVARCHAR(30)            
 );
 
 CREATE TABLE GoiHang (
-    donHang CHAR(10),
-    stt INT,
-    canNang DECIMAL(10, 2),
-    gia DECIMAL(10, 2),
+    donHang CHAR(10) NOT NULL,
+    stt INT NOT NULL,
+    canNang INT NOT NULL,
+    gia INT DEFAULT 0,
     CONSTRAINT m_check CHECK (canNang > 0),
     moTa NVARCHAR(100),
     CONSTRAINT pkgOrd_fk FOREIGN KEY(donHang) REFERENCES DonHang(maDonHang) ON DELETE CASCADE,
@@ -178,7 +178,9 @@ CREATE TABLE DamNhan(
 
 CREATE TABLE NhanGoiHang(
     maNhan CHAR(3) PRIMARY KEY,
-    loaiHang NVARCHAR(30)
+    loaiHang NVARCHAR(30) NOT NULL,
+    phiDichVu INT NOT NULL,
+    CONSTRAINT phi_check CHECK (phiDichVu > 0)
 );
 
 CREATE TABLE DuocGan(
@@ -187,18 +189,18 @@ CREATE TABLE DuocGan(
 	maNhan CHAR(3) NOT NULL,
 	
 	PRIMARY KEY (donHang, goiHang, maNhan),
-	FOREIGN KEY (donHang, goiHang) REFERENCES GoiHang(donHang, stt) ON DELETE CASCADE,
-	FOREIGN KEY (maNhan) REFERENCES NhanGoiHang(maNhan) ON DELETE CASCADE,
+	CONSTRAINT ordPkg_fk FOREIGN KEY (donHang, goiHang) REFERENCES GoiHang(donHang, stt) ON DELETE CASCADE,
+	CONSTRAINT label_fk FOREIGN KEY (maNhan) REFERENCES NhanGoiHang(maNhan) ON DELETE CASCADE,
 );
 
 -- DROP TABLE HoaDon;
 
 CREATE TABLE HoaDon (
     maHoaDon CHAR(10) PRIMARY KEY,
-    tongTien DECIMAL(10,2),
+    tongTien INT NOT NULL,
     CONSTRAINT totalCheck CHECK (tongTien >= 0),
-    tinhTrang NVARCHAR(20),
-    CONSTRAINT billStt_check CHECK (tinhTrang = N'Đã thanh toán' OR tinhTrang = N'Chưa thanh toán')
+    tinhTrang NVARCHAR(20) DEFAULT N'Chưa thanh toán',
+    CONSTRAINT billStt_check CHECK (tinhTrang = N'Đã thanh toán' OR tinhTrang = N'Chưa thanh toán' OR tinhTrang = N'Đã huỷ')
 );
 
 CREATE TABLE GiaoDich(
@@ -208,7 +210,7 @@ CREATE TABLE GiaoDich(
     soTien DECIMAL (10, 2) NOT NULL,
     thoiDiem DATETIME NOT NULL,
     phuongThuc NVARCHAR(20),
-    CONSTRAINT transMethod_check CHECK (phuongThuc = N'Tiền mặt' OR phuongThuc = N'Thẻ' OR phuongThuc = N'Chuyển khoản NH'),
+    CONSTRAINT transMethod_check CHECK (phuongThuc = N'Tiền mặt' OR phuongThuc = N'Thẻ' OR phuongThuc = N'Chuyển khoản'),
     tinhTrang NVARCHAR(10),
     CONSTRAINT transStt_check CHECK (tinhTrang = N'Thành công' OR tinhTrang = N'Thất bại')
 );
@@ -217,9 +219,15 @@ CREATE TABLE ThanhToan (
     hoaDon CHAR(10) NOT NULL,
     donHang CHAR(10) NOT NULL,
     CONSTRAINT bill_fk FOREIGN KEY (hoaDon) REFERENCES HoaDon(maHoaDon) ON DELETE CASCADE,
-    CONSTRAINT ord_fk FOREIGN KEY (hoaDon) REFERENCES DonHang(maDonHang) ON DELETE CASCADE
+    CONSTRAINT ord_fk FOREIGN KEY (donHang) REFERENCES DonHang(maDonHang) ON DELETE CASCADE
 );
 
+CREATE TABLE GiamGia (
+    ngayBatDau DATE,
+    ngayKetThuc DATE,
+    nhan CHAR(3),
+    giam FLOAT
+)
 
 
 -- USE master;
