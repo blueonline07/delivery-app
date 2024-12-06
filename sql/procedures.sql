@@ -1,6 +1,6 @@
 CREATE OR ALTER PROC insert_order
     @user CHAR(10), @rcv_phone CHAR(10), @rcv_name NVARCHAR(MAX),
-    @xa NVARCHAR(MAX), @huyen NVARCHAR(MAX), @tinh NVARCHAR(MAX), @chiTiet NVARCHAR(MAX)
+    @tinh NVARCHAR(MAX),@xa NVARCHAR(MAX),@huyen NVARCHAR(MAX),  @chiTiet NVARCHAR(MAX)
 AS
 BEGIN TRY
     -- Validate phone number: must be 10 digits and only numeric
@@ -167,18 +167,18 @@ EXEC add_pkg 'DH00000001', N'Hâhhaa', 10000, 'A01,A02'
 
 
 -- DROP PROCEDURE IF EXISTS GetGoiHangDetails;
-
-    CREATE PROCEDURE GetGoiHangDetails
-        @donHang CHAR(10),
-        @minCanNang DECIMAL(10, 2)
-    AS
-    BEGIN
-        SELECT gh.donHang, gh.stt, gh.canNang, gh.gia, gh.moTa, dh.hoTenNguoiNhan, dh.tinhTrang
-        FROM GoiHang gh
-                 JOIN DonHang dh ON gh.donHang = dh.maDonHang
-        WHERE gh.donHang = @donHang AND gh.canNang >= @minCanNang
-        ORDER BY gh.canNang ASC ;
-    END;
+GO
+CREATE PROCEDURE GetGoiHangDetails
+    @donHang CHAR(10),
+    @minCanNang DECIMAL(10, 2)
+AS
+BEGIN
+    SELECT gh.donHang, gh.stt, gh.canNang, gh.gia, gh.moTa, dh.hoTenNguoiNhan, dh.tinhTrang
+    FROM GoiHang gh
+                JOIN DonHang dh ON gh.donHang = dh.maDonHang
+    WHERE gh.donHang = @donHang AND gh.canNang >= @minCanNang
+    ORDER BY gh.canNang ASC ;
+END;
 
 -- EXEC GetGoiHangDetails 'DH002', 0.9;
 
@@ -218,7 +218,7 @@ BEGIN CATCH
     PRINT ERROR_MESSAGE();
 END CATCH
 
-
+GO
 -- 1.2.3: DonHang and GoiHang
 CREATE OR ALTER PROCEDURE getDonHang @sdt CHAR (10), @minCanNang DECIMAL(10,2), @minNgayTao DATE, @maxNgayTao DATE
 AS
@@ -232,6 +232,23 @@ BEGIN
 END;
 
 EXEC getDonHang '0123456789', 2.0, '20110618', '20241201'
+GO
 
+
+CREATE OR ALTER PROCEDURE fetch_orders
+    @searchValue NVARCHAR(MAX), @start INT, @length INT, @orderColumn NVARCHAR(MAX), @orderDir NVARCHAR(4)
+AS
+BEGIN
+    DECLARE @sql NVARCHAR(MAX);
+    SET @sql = N'SELECT * FROM DonHang WHERE sdtNguoiNhan LIKE @searchValue
+        ORDER BY ' + @orderColumn + ' ' + @orderDir + ' OFFSET @start ROWS FETCH NEXT @length ROWS ONLY';
+    EXEC sp_executesql @sql, N'@searchValue NVARCHAR(MAX), @start INT, @length INT', @searchValue, @start, @length;
+END;
+    
+
+
+-- `SELECT * FROM DonHang WHERE sdtNguoiNhan LIKE @searchValue 
+--         ORDER BY ${columns[order[0].column].data} ${order[0].dir} 
+--         OFFSET @start ROWS FETCH NEXT @length ROWS ONLY`
 
 

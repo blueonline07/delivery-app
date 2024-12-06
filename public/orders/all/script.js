@@ -5,11 +5,12 @@ $(document).ready(function () {
     processing: true,
     ajax: {
       url: "http://localhost:8000/api/orders/data",
-      type: "POST",
+      type: "POST"
     },
     columns: [
       { data: "maDonHang" },
       { data: "ngayTao" },
+      { data: "sdtNguoiNhan" },
       { data: "hoTenNguoiNhan" },
       { data: "tinh" },
       { data: "huyen" },
@@ -24,13 +25,12 @@ $(document).ready(function () {
           console.log(row);
           return `
                 <button class="btn btn-primary btn-sm edit-btn" data-id="${row.maDonHang}">Edit</button>
-                <button class="btn btn-danger btn-sm delete-btn" data-id="${row.maDonHang}">Delete</button>
             `;
         },
       },
     ],
-    pageLength: 10,
-    lengthMenu: [10, 25, 50, 100],
+    pageLength: 5,
+    lengthMenu: [5, 10, 25, 50],
     order: [[0, "asc"]],
   });
 
@@ -39,13 +39,7 @@ $(document).ready(function () {
     const id = $(this).data("id");
     alert("Edit button clicked for ID: " + id);
     // Implement your edit logic here
-    window.location.href = "/orders/create";
-  });
-
-  $("#example tbody").on("click", ".delete-btn", function () {
-    const id = $(this).data("id");
-    alert("Delete button clicked for ID: " + id);
-    // Implement your delete logic here
+    // window.location.href = "/orders/create";
   });
   
 });
