@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đơn hàng</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-5">
+    <h2 class="text-center">Order Management</h2>
+
+    <!-- User Information -->
+    <div class="form-row mt-4">
+        <div class="form-group col-md-6">
+            <label for="phoneNumber">Số điện thoại</label>
+            <input type="tel" class="form-control" id="phoneNumber" placeholder="Nhập số điện thoại">
+        </div>
+        <div class="form-group col-md-6">
+            <label for="username">Tên người dùng</label>
+            <input type="text" class="form-control" id="username" placeholder="Nhập tên người dùng">
+        </div>
+    </div>
+
+    <!-- Address Information -->
+    <div class="form-row mt-3">
+        <div class="form-group col-md-3">
+            <label for="details">Chi tiết</label>
+            <input type="text" class="form-control" id="details" placeholder="Địa chỉ chi tiết">
+        </div>
+        <div class="form-group col-md-3">
+            <label for="commune">Xã / Phường</label>
+            <input type="text" class="form-control" id="commune" placeholder="Xã, phường,...">
+        </div>
+        <div class="form-group col-md-3">
+            <label for="district">Huyện / Quận</label>
+            <input type="text" class="form-control" id="district" placeholder="Huyện, quận,...">
+        </div>
+        <div class="form-group col-md-3">
+            <label for="province">Tỉnh / Thành phố</label>
+            <input type="text" class="form-control" id="province" placeholder="Tỉnh, TP,...">
+        </div>
+    </div>
+
+    <!-- Package List -->
+    <h4 class="mt-4">Danh sách gói hàng</h4>
+    <ul class="list-group" id="packageList">
+        <!-- Example static package item -->
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            Gói 1
+            <div>
+                <button class="btn btn-warning btn-sm mr-2">Sửa</button>
+                <button class="btn btn-danger btn-sm">Xóa</button>
+            </div>
+        </li>
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            Gói 2
+            <div>
+                <button class="btn btn-warning btn-sm mr-2">Sửa</button>
+                <button class="btn btn-danger btn-sm">Xóa</button>
+            </div>
+        </li>
+        <!-- More packages can be added dynamically -->
+    </ul>
+
+    <!-- Control Buttons -->
+    <div class="mt-4 d-flex justify-content-between">
+        <button class="btn btn-success" id="addPackage">Thêm</button>
+        <button class="btn btn-primary" id="completeOrder">Hoàn Thành</button>
+    </div>
+</div>
+
+<script>
+    document.getElementById('addPackage').addEventListener('click', function() {
+        // Code to add a new package
+        console.log('Add package');
+    });
+
+    document.getElementById('completeOrder').addEventListener('click', function() {
+        // Code to complete the order
+        console.log('Complete order');
+    });
+</script>
+</body>
+</html>
