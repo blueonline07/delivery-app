@@ -1,24 +1,9 @@
-CREATE DATABASE delivery;
-USE delivery;
-
-GO
-CREATE FUNCTION calc_age
-(
-    @bday DATE
-)
-RETURNS INT
-AS
+IF NOT EXISTS (SELECT * FROM sys.databases WHERE name = 'delivery')
 BEGIN
-    DECLARE @age INT;
-    SET @age = DATEDIFF(YEAR, @bday, GETDATE());
-    IF (MONTH(@bday) > MONTH(GETDATE())) 
-        OR (MONTH(@bday) = MONTH(GETDATE()) AND DAY(@bday) > DAY(GETDATE()))
-    BEGIN
-        SET @age = @age - 1;
-    END;
-    RETURN @age
+    CREATE DATABASE delivery;
 END;
 GO
+USE delivery;
 
 -- Cac bang lien quan den nguoi` dung, tram va cac thuc the vat ly khac
 
@@ -134,6 +119,8 @@ CREATE TABLE DonHang (
     chiTiet NVARCHAR(30)            
 );
 
+-- SELECT * FROM DonHang;
+
 CREATE TABLE GoiHang (
     donHang CHAR(10) NOT NULL,
     stt INT NOT NULL,
@@ -144,6 +131,7 @@ CREATE TABLE GoiHang (
     CONSTRAINT pkgOrd_fk FOREIGN KEY(donHang) REFERENCES DonHang(maDonHang) ON DELETE CASCADE,
     PRIMARY KEY (donHang, stt)
 );
+
 
 CREATE TABLE Tuyen(
     donHang CHAR(10),
@@ -202,6 +190,7 @@ CREATE TABLE HoaDon (
     tinhTrang NVARCHAR(20) DEFAULT N'Chưa thanh toán',
     CONSTRAINT billStt_check CHECK (tinhTrang = N'Đã thanh toán' OR tinhTrang = N'Chưa thanh toán' OR tinhTrang = N'Đã huỷ')
 );
+
 
 CREATE TABLE GiaoDich(
     maGiaoDich CHAR(10) PRIMARY KEY,
