@@ -41,5 +41,7 @@ $(document).ready(function () {
     // Implement your edit logic here
     // window.location.href = "/orders/create";
   });
+
+  $("#username").text(localStorage.getItem("phone"));
   
 });

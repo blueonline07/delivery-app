@@ -1,36 +1,11 @@
 import express from "express";
 import sql from "mssql";
-
+import { pool } from "../db.js";
 const router = express.Router();
-
-// Mssql connection
-const config = {
-  user: "sa",
-  password: "12345Qwerty@",
-  server: "localhost",
-  port: 1433,
-  database: "delivery",
-  options: {
-    encrypt: true, // or false depending on your setup
-    trustServerCertificate: true, // Allow untrusted SSL certificates
-  },
-};
-
-let pool;
-
-sql
-  .connect(config)
-  .then((p) => {
-    pool = p;
-    console.log("Database connected");
-  })
-  .catch((err) => {
-    console.error("Database connection test query error:", err);
-  });
 
 router.post("/data", async (req, res) => {
   const { draw, start, length, search, order, columns } = req.body;
-  console.log(req.body);
+  console.log(search);
   try {
     // Query total records
     const totalRecords = await pool
@@ -51,9 +26,7 @@ router.post("/data", async (req, res) => {
       .input("start", sql.Int, start)
       .input("order", sql.NVarChar, columns[order[0].column].data)
       .input("dir", sql.NVarChar, order[0].dir)
-      .query(
-        'EXEC fetch_orders @searchValue, @start, @length, @order, @dir'
-      );
+      .query("EXEC fetch_orders @searchValue, @start, @length, @order, @dir");
     // Respond to DataTables
     res.json({
       draw,
@@ -73,7 +46,7 @@ router.post("/create", async (req, res) => {
   try {
     const { recordset } = await pool
       .request()
-      .input("sdtNguoiGui", sql.NVarChar, '0123456789')
+      .input("sdtNguoiGui", sql.NVarChar, "0123456789")
       .input("hoTenNguoiNhan", sql.NVarChar, hoTenNguoiNhan)
       .input("sdtNguoiNhan", sql.NVarChar, sdtNguoiNhan)
       .input("tinh", sql.NVarChar, tinh)
