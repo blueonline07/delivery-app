@@ -1,6 +1,6 @@
 
 -- Trigger update giá gói hàng
-CREATE TRIGGER trg_UpdateGia
+CREATE OR ALTER TRIGGER trg_UpdateGia
 ON DuocGan
 AFTER INSERT,  DELETE
 AS
@@ -45,7 +45,7 @@ END;
 
 -- Trigger kiểm tra giao dịch
 GO
-CREATE TRIGGER trg_CheckGiaoDich
+CREATE OR ALTER TRIGGER trg_CheckGiaoDich
 ON GiaoDich
 AFTER INSERT, UPDATE
 AS
@@ -67,8 +67,8 @@ BEGIN
 		END
 		IF EXISTS (
 			SELECT 1
-			FROM inserted I
-			JOIN GiaoDich GD ON I.hoaDon = GD.hoaDon
+			FROM GiaoDich GD
+			JOIN inserted I ON I.hoaDon = GD.hoaDon
 			GROUP BY I.hoaDon
 			HAVING COUNT(GD.hoaDon) > 3
 		)
