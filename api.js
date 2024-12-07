@@ -5,7 +5,7 @@ import OrderRouter from './api/orders.js';
 import AuthRouter from './api/auth.js';
 
 const app = express();
-const port = 8000;
+const port = 8080;
 
 // Middleware
 app.use(cors());

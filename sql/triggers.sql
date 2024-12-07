@@ -111,3 +111,18 @@ BEGIN
 		END
 		END
 	END;
+
+GO
+CREATE OR ALTER TRIGGER hash_password
+ON NguoiDung
+AFTER INSERT, UPDATE
+AS
+BEGIN
+    DECLARE @password NVARCHAR(255);
+
+    SELECT @password = matKhau FROM inserted;
+
+    UPDATE NguoiDung SET matKhau = CONVERT(VARCHAR(64), HASHBYTES('SHA2-256', @password), 2)
+    FROM NguoiDung
+    INNER JOIN inserted ON NguoiDung.sdt = inserted.sdt;
+END;

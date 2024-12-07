@@ -1,21 +1,24 @@
-$(document).ready(function() {
-    $("#route").DataTable({
-        serverSide: true,
-        processing: true,
-        ajax: {
-            url: "http://localhost:8000/api/routes/data",
-            type: "POST",
+$(document).ready(function () {
+    $("#routeForm").on("submit", function (e) {
+      e.preventDefault();
+
+      const orderID = {
+        maDonHang: $("#maDonHang").val(),
+      };
+
+      $.ajax({
+        url: "http://localhost:8000/api/routes/create",  
+        type: "POST",
+        contentType: "application/json",
+        data: JSON.stringify(orderID),
+        success: function (response) {
+          alert("Order added successfully!");
+          dataTable.ajax.reload();  
+          $("#routeForm")[0].reset();  
         },
-        columns: [
-            {data: "STT"},
-            {data: "BatDau"},
-            {data: "KetThuc"},
-            {data: "TramDamNhan"},
-            {data: "TaiXeDamNhan"},
-            {data: "TinhTrang"},
-        ],
-        pageLength: 10,
-        lengthMenu: [10, 25, 50, 100],
-        order: [[0, "asc"]]  
-    })
-});
+        error: function () {
+          alert("Error adding order!");
+        },
+      });
+    });
+  });

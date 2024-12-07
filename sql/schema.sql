@@ -1,10 +1,3 @@
-IF NOT EXISTS (SELECT * FROM sys.databases WHERE name = 'delivery')
-BEGIN
-    CREATE DATABASE delivery;
-END;
-GO
-USE delivery;
-
 -- Cac bang lien quan den nguoi` dung, tram va cac thuc the vat ly khac
 
 CREATE TABLE NguoiDung (
@@ -14,7 +7,7 @@ CREATE TABLE NguoiDung (
  	hoTen NVARCHAR(50),
  	namSinh DATE,
     CONSTRAINT age_check CHECK (dbo.calc_age(namSinh) >= 16 AND dbo.calc_age(namSinh) <= 100), 
- 	matKhau VARCHAR(50),
+ 	matKhau VARCHAR(64),
 	gioiTinh NCHAR(3),
     CONSTRAINT sex_check CHECK (gioiTinh = N'Nam' OR gioiTinh = N'Nữ')
 );
@@ -112,7 +105,8 @@ CREATE TABLE DonHang (
     hoTenNguoiNhan NVARCHAR(50) NOT NULL,     
     tinhTrang NVARCHAR(10) DEFAULT N'Đang giao', 
     CONSTRAINT ordStt_check CHECK (tinhTrang = N'Đã giao' OR tinhTrang = N'Đang giao' OR tinhTrang = N'Đã huỷ') ,
-    ngayTao DATE DEFAULT GETDATE(),                    
+    ngayTao DATE DEFAULT GETDATE(),     
+    gia INT DEFAULT 0,               
     xa NVARCHAR(20) NOT NULL,           
     huyen NVARCHAR(20) NOT NULL,             
     tinh NVARCHAR(20) NOT NULL,              
@@ -210,13 +204,6 @@ CREATE TABLE ThanhToan (
     CONSTRAINT bill_fk FOREIGN KEY (hoaDon) REFERENCES HoaDon(maHoaDon) ON DELETE CASCADE,
     CONSTRAINT ord_fk FOREIGN KEY (donHang) REFERENCES DonHang(maDonHang) ON DELETE CASCADE
 );
-
-CREATE TABLE GiamGia (
-    ngayBatDau DATE,
-    ngayKetThuc DATE,
-    nhan CHAR(3),
-    giam FLOAT
-)
 
 
 -- USE master;

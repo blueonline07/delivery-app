@@ -90,7 +90,7 @@ $(document).ready(function () {
     };
 
     $.ajax({
-      url: "http://localhost:8000/api/orders/create",  
+      url: "http://localhost:8080/api/orders/",  
       type: "POST",
       contentType: "application/json",
       data: JSON.stringify(orderData),
