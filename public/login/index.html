@@ -4,56 +4,65 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Login</title>
-  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../styles/main.css">
 </head>
 <body>
-  <div class="container">
-    <div class="row justify-content-center">
-      <div class="col-md-6">
-        <h2 class="text-center mt-5">Login</h2>
-        <form id="loginForm">
-          <div class="form-group">
-            <label for="phone">Phone Number</label>
-            <input type="tel" class="form-control" id="phone" placeholder="Enter phone number" required>
-          </div>
-          <div class="form-group">
-            <label for="password">Password</label>
-            <input type="password" class="form-control" id="password" placeholder="Password" required>
-          </div>
-          <input type="submit" class="btn btn-primary btn-block">
-        </form>
+  <div>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="/">Delivery App</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="/orders">Services</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/routes">Tracker</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/">Payment</a>
+            </li>
+            <!-- User-related link, shown if logged in -->
+            <li class="nav-item" id="user-name-container" style="display: none;">
+              <span class="nav-link" id="user-name"></span>
+            </li>
+            <!-- Logout button, shown if logged in -->
+            <li class="nav-item" id="logout-link" style="display: none;">
+              <button class="btn btn-danger" id="logout-btn">Logout</button>
+            </li>
+            <!-- Login link, shown if not logged in -->
+            <li class="nav-item" id="login-link">
+              <a class="nav-link" href="/login">Login</a>
+            </li>
+          </ul>
+        </div>
       </div>
-    </div>
+    </nav>
   </div>
+  <main class="login-page">
+    <div class="login-container">
+      <h1 class="text-center mb-4">Login</h1>
+      <form id="login-form">
+        <div class="mb-3">
+          <label for="phone" class="form-label">Phone Number</label>
+          <input type="tel" class="form-control" id="phone" placeholder="Enter your phone number" required>
+          <div class="invalid-feedback">Please enter a valid phone number.</div>
+        </div>
+        <div class="mb-3">
+          <label for="password" class="form-label">Password</label>
+          <input type="password" class="form-control" id="password" placeholder="Enter your password" required>
+          <div class="invalid-feedback">Password is required.</div>
+        </div>
+        <button type="submit" class="btn btn-primary w-100">Login</button>
+      </form>
+    </div>
+  </main>
 
-  <script>
-    document.getElementById('loginForm').addEventListener('submit', function(event) {
-      event.preventDefault();
-      const phone = document.getElementById('phone').value;
-      const password = document.getElementById('password').value;
-      console.log(phone, password);
-      fetch('http://localhost:8000/api/login/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ phone, password })
-      })
-      .then(response => {
-        if (response.ok){
-          console.log("HIIII");
-          localStorage.setItem('phone', phone);
-          localStorage.setItem('password', password);
-          window.location.href = 'http://localhost:3000/orders/all';
-        }
-        else{
-          alert('Login failed');
-        }
-      })
-      .catch((error) => {
-        console.error('Error:', error);
-      });
-    });
-  </script>
+<script src="script.js"></script>
+
 </body>
 </html>

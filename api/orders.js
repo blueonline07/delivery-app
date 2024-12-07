@@ -4,30 +4,30 @@ import { pool } from "../db.js";
 const router = express.Router();
 
 router.post("/data", async (req, res) => {
-  const { draw, start, length, search, order, columns } = req.body;
-  console.log(search);
+  const { draw, start, length, search, order, columns, phone } = req.body;
   try {
     // Query total records
     const totalRecords = await pool
-      .request()
-      .query("SELECT COUNT(*) AS total FROM DonHang");
+    .request()
+    .query("SELECT COUNT(*) AS total FROM DonHang");
     // Query filtered records
     const filteredRecords = await pool
-      .request()
-      .input("searchValue", sql.NVarChar, `%${search.value}%`)
-      .query(
-        "SELECT COUNT(*) AS total FROM DonHang WHERE maDonHang LIKE @searchValue"
-      );
-    // Query records
+    .request()
+    .input("searchValue", sql.NVarChar, `%${search.value}%`)
+    .query(
+      "SELECT COUNT(*) AS total FROM DonHang WHERE maDonHang LIKE @searchValue"
+    );
+
     const data = await pool
       .request()
+      .input("user", sql.Char, phone)
       .input("searchValue", sql.NVarChar, `%${search.value}%`)
       .input("length", sql.Int, length)
       .input("start", sql.Int, start)
       .input("order", sql.NVarChar, columns[order[0].column].data)
       .input("dir", sql.NVarChar, order[0].dir)
-      .query("EXEC fetch_orders @searchValue, @start, @length, @order, @dir");
-    // Respond to DataTables
+      .query("EXEC fetch_orders @user, @searchValue, @start, @length, @order, @dir");
+
     res.json({
       draw,
       recordsTotal: totalRecords.recordset[0].total,
@@ -40,9 +40,8 @@ router.post("/data", async (req, res) => {
   }
 });
 
-router.post("/create", async (req, res) => {
+router.post("/", async (req, res) => {
   const { hoTenNguoiNhan, sdtNguoiNhan, tinh, huyen, xa, chiTiet } = req.body;
-  console.log(req.body);
   try {
     const { recordset } = await pool
       .request()
