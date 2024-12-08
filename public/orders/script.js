@@ -1,4 +1,8 @@
 $(document).ready(function () {
+  if (localStorage.getItem("phone") == null) {
+    window.location.href = "/";
+  }
+
   var table = $("#example").DataTable({
     serverSide: true,
     processing: true,

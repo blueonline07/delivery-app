@@ -9,13 +9,15 @@ router.post("/data", async (req, res) => {
     // Query total records
     const totalRecords = await pool
     .request()
-    .query("SELECT COUNT(*) AS total FROM DonHang");
+    .input("phone", sql.Char, phone)
+    .query("SELECT COUNT(*) AS total FROM DonHang WHERE nguoiTaoDon = @phone");
     // Query filtered records
     const filteredRecords = await pool
     .request()
+    .input("phone", sql.Char, phone)
     .input("searchValue", sql.NVarChar, `%${search.value}%`)
     .query(
-      "SELECT COUNT(*) AS total FROM DonHang WHERE maDonHang LIKE @searchValue"
+      "SELECT COUNT(*) AS total FROM DonHang WHERE maDonHang LIKE @searchValue AND nguoiTaoDon = @phone"
     );
 
     const data = await pool
