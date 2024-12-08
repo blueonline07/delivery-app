@@ -1,24 +1,38 @@
 $(document).ready(function () {
-    $("#routeForm").on("submit", function (e) {
-      e.preventDefault();
+  if (localStorage.getItem("phone") == null) {
+    window.location.href = "/";
+  }
 
-      const orderID = {
-        maDonHang: $("#maDonHang").val(),
-      };
-
-      $.ajax({
-        url: "http://localhost:8000/api/routes/create",  
-        type: "POST",
-        contentType: "application/json",
-        data: JSON.stringify(orderID),
-        success: function (response) {
-          alert("Order added successfully!");
-          dataTable.ajax.reload();  
-          $("#routeForm")[0].reset();  
+  var table = $("#routes").DataTable({
+    serverSide: true,
+    processing: true,
+    ajax: {
+      url: "http://localhost:8080/api/routes/data",
+      type: "POST",
+      data: function (d) {
+        d.phone = localStorage.getItem("phone");
+      },
+    },
+    columns: [
+      { data: "stt" },
+      { data: null, 
+        seachable: false,
+        orderable: false,
+        render: function (data, type, row) {
+          return data.tinhBD + ", " + data.huyenBD + ", " + data.xaBD + ", " + data.chiTietBD;
         },
-        error: function () {
-          alert("Error adding order!");
+      },
+      { data: null, 
+        seachable: false,
+        orderable: false,
+        render: function (data, type, row) {
+          return data.tinhKT + ", " + data.huyenKT + ", " + data.xaKT + ", " + data.chiTietKT;
         },
-      });
-    });
+      },
+      { data: "tinhTrang" }
+    ],
+    pageLength: 5,
+    lengthMenu: [5, 10, 25, 50],
+    order: [[0, "asc"]],
   });
+});

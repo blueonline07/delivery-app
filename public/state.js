@@ -18,6 +18,7 @@ document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('logout-btn')?.addEventListener('click', function() {
     // Clear the localStorage
     localStorage.removeItem('name');
+    localStorage.removeItem('phone');
 
     // Hide the user info and show login link again
     document.getElementById('user-name-container').style.display = 'none';
