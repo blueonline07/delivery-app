@@ -11,7 +11,6 @@ router.post('', async (req, res) => {
   const { phone, password } = req.body;
   try {
     const hash = crypto.createHmac('sha256', secret).update(password).digest('hex');
-    console.log(hash)
     const { recordset } = await pool
       .request()
       .input('sdt', sql.NVarChar, phone)

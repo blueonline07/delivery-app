@@ -134,6 +134,7 @@ CREATE TABLE Tuyen(
     PRIMARY KEY(donHang, stt),
     tinhTrang NVARCHAR(20),
     CONSTRAINT routeStt_check CHECK (tinhTrang = N'Hoàn thành' OR tinhTrang = N'Chưa hoàn thành'),
+    quangDuong INT,
     xaBD NVARCHAR(20),
     huyenBD NVARCHAR(20),
     tinhBD NVARCHAR(20),

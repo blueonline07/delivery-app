@@ -20,7 +20,7 @@ $(document).ready(function () {
       { data: "huyen" },
       { data: "xa" },
       { data: "chiTiet" },
-      { data: "tinhTrang" }
+      { data: "gia" }
     ],
     pageLength: 5,
     lengthMenu: [5, 10, 25, 50],
@@ -34,7 +34,7 @@ $(document).ready(function () {
     var row = this;
     hoverTimeout = setTimeout(function () {
       var data = table.row(row).data();
-      hoverInfo.text(`Receiver phone number: ${data.sdtNguoiNhan}, created_at: ${data.ngayTao}`);
+      hoverInfo.text(`Receiver phone number: ${data.sdtNguoiNhan}, created_at: ${data.ngayTao}, status: ${data.tinhTrang}`);
       var position = $(row).offset();
       hoverInfo.css({
         top: position.top + $(row).height() + 5, // Position below the row

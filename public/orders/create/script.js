@@ -1,6 +1,4 @@
 $(document).ready(function () {
-  const phoneRegex = /^(0)+([0-9]{9})$/;
-  let username = "test";
   const locations = {
     "Hà Nội": {
       "Ba Đình": ["Phúc Xá", "Cống Vị", "Liễu Giai"],
@@ -72,36 +70,61 @@ $(document).ready(function () {
   });
 
   // Handle order form submission
-  $("#orderForm").on("submit", function (e) {
-    e.preventDefault();
-    const sdt = $("#sdt").val();
-    if (!phoneRegex.test(sdt)) {
-      alert("Số điện thoại không hợp lệ! Vui lòng nhập lại.");
-      return;
-    }
+  
+});
 
-    const orderData = {
-      hoTenNguoiNhan: $("#hotennguoinhan").val(),
-      sdtNguoiNhan: $("#sdt").val(),
-      tinh: $("#tinh").val(),
-      huyen: $("#huyen").val(),
-      xa: $("#xa").val(),
-      chiTiet: $("#chiTiet").val(),
-    };
 
-    $.ajax({
-      url: "http://localhost:8080/api/orders/",  
-      type: "POST",
-      contentType: "application/json",
-      data: JSON.stringify(orderData),
-      success: function (response) {
-        alert("Order added successfully!");
-        dataTable.ajax.reload();  
-        $("#orderForm")[0].reset();  
-      },
-      error: function () {
-        alert("Error adding order!");
-      },
+$("#orderForm").on("submit", function (e) {
+  const phoneRegex = /^(0)+([0-9]{9})$/;
+  e.preventDefault();
+  const sdt = $("#sdt").val();
+  if (!phoneRegex.test(sdt)) {
+    alert("Số điện thoại không hợp lệ! Vui lòng nhập lại.");
+    return;
+  }
+
+  const orderData = {
+    hoTenNguoiNhan: $("#hotennguoinhan").val(),
+    sdtNguoiNhan: $("#sdt").val(),
+    tinh: $("#tinh").val(),
+    huyen: $("#huyen").val(),
+    xa: $("#xa").val(),
+    chiTiet: $("#chiTiet").val(),
+    packages: [],
+    phone : localStorage.getItem("phone")
+  };
+
+  const rows = document.querySelectorAll('#packages tr');
+  rows.forEach((row) => {
+    const description = row.querySelector('input[name="description"]').value;
+    const weight = row.querySelector('input[name="weight"]').value;
+    const labels = row.querySelector('input[name="labels"]').value;
+
+    // Push the package details to the array
+    orderData.packages.push({
+      description,
+      weight,
+      labels, // If this value is dynamic, fetch it similarly
     });
   });
+
+  console.log(orderData);
+  $.ajax({
+    url: "http://localhost:8080/api/orders/",  
+    type: "POST",
+    contentType: "application/json",
+    data: JSON.stringify(orderData),
+    success: function (response) {
+      alert("Order added successfully!");
+      dataTable.ajax.reload();  
+      $("#orderForm")[0].reset();  
+    },
+    error: function () {
+      alert("Error adding order!");
+    },
+  });
 });
+
+
+
+

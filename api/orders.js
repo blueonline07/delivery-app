@@ -43,20 +43,35 @@ router.post("/data", async (req, res) => {
 });
 
 router.post("/", async (req, res) => {
-  const { hoTenNguoiNhan, sdtNguoiNhan, tinh, huyen, xa, chiTiet } = req.body;
+  const { hoTenNguoiNhan, sdtNguoiNhan, tinh, huyen, xa, chiTiet, packages, phone } = req.body;
   try {
-    const { recordset } = await pool
+
+    const result = await pool
       .request()
-      .input("sdtNguoiGui", sql.NVarChar, "0123456789")
+      .input("sdtNguoiGui", sql.NVarChar, phone)
       .input("hoTenNguoiNhan", sql.NVarChar, hoTenNguoiNhan)
       .input("sdtNguoiNhan", sql.NVarChar, sdtNguoiNhan)
       .input("tinh", sql.NVarChar, tinh)
       .input("huyen", sql.NVarChar, huyen)
       .input("xa", sql.NVarChar, xa)
       .input("chiTiet", sql.NVarChar, chiTiet)
+      .output("NewID", sql.NVarChar)
       .query(
-        "EXEC insert_order @sdtNguoiGui, @sdtNguoiNhan, @hoTenNguoiNhan, @tinh, @huyen, @xa, @chiTiet"
+        "EXEC insert_order @sdtNguoiGui, @sdtNguoiNhan, @hoTenNguoiNhan, @tinh, @huyen, @xa, @chiTiet, @NewID OUTPUT"
       );
+    const newId = result.output.NewID;
+    console.log(newId);
+    packages.forEach(async (element) => {
+      await pool
+        .request()
+        .input("description", sql.NVarChar, element.description)
+        .input("weight", sql.Float, element.weight)
+        .input("labels", sql.NVarChar, element.labels)
+        .input("orderId", sql.NVarChar, newId)
+        .query("EXEC add_pkg @orderId, @description, @weight, @labels");
+    });
+    
+    console.log("HI")
     res.status(201).json({ message: "Order added successfully!" });
   } catch (error) {
     console.error(error);
