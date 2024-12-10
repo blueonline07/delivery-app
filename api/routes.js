@@ -29,7 +29,7 @@ router.post("/data", async (req, res) => {
     .input("start", sql.Int, start)
     .input("order", sql.NVarChar, columns[order[0].column].data)
     .input("dir", sql.NVarChar, order[0].dir)
-    .query("SELECT r.stt, r.tinhBD, r.huyenBD, r.xaBD, r.chiTietBD, r.tinhKT, r.huyenKT, r.xaKT, r.chiTietKT, r.tinhTrang \
+    .query("SELECT r.stt, r.tinhBD, r.huyenBD, r.xaBD, r.chiTietBD, r.tinhKT, r.huyenKT, r.xaKT, r.chiTietKT, r.tinhTrang, r.quangDuong \
       FROM Tuyen r INNER JOIN DonHang o ON  r.donHang = o.maDonHang\
       WHERE o.nguoiTaoDon = @user AND o.maDonHang LIKE @searchValue \
       ORDER BY " + columns[order[0].column].data + " " + order[0].dir + " OFFSET @start ROWS FETCH NEXT @length ROWS ONLY");

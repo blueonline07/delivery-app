@@ -54,7 +54,9 @@
       <thead>
         <tr>
           <th class="checkbox-column">
-            <input type="checkbox" id="selectAll">
+            <div class="checkbox-wrapper">
+              <input type="checkbox" id="selectAll">
+            </div>
           </th>
           <th>OrderID</th>
           <th>Receiver</th>
@@ -65,13 +67,15 @@
           <th>Status</th>
         </tr>
       </thead>
-      <tbody id="orderList">
-        <!-- Data rows will be dynamically added here -->
-      </tbody>
     </table>
-    <div class="d-flex justify-content-between mb-3">
+    <div class="d-flex justify-content-between mb-3" style="margin-top: 50px;">
       <a href="/orders/create" class="btn btn-primary" >Create New Order</a>
-      <a href="/payment/bill" class="btn btn-primary" style="background-color: green;">Payment</a>
+      <a href="javascript:void(0);" 
+        class="btn btn-primary" 
+        style="background-color: green;" 
+        id="paymentBtn">
+        Payment
+      </a>
     </div>
 
     

@@ -172,7 +172,7 @@ CREATE TABLE DuocGan(
 	maNhan CHAR(3) NOT NULL,
 	
 	PRIMARY KEY (donHang, goiHang, maNhan),
-	CONSTRAINT ordPkg_fk FOREIGN KEY (donHang, goiHang) REFERENCES GoiHang(donHang, stt) ON DELETE CASCADE,
+	CONSTRAINT ordPkg_fk FOREIGN KEY (donHang, goiHang) REFERENCES GoiHang(donHang, stt) ON DELETE CASCADE ON UPDATE CASCADE,
 	CONSTRAINT label_fk FOREIGN KEY (maNhan) REFERENCES NhanGoiHang(maNhan) ON DELETE CASCADE,
 );
 
