@@ -11,7 +11,7 @@ $(document).ready(function () {
       type: "POST",
       data: function (d) {
         d.phone = localStorage.getItem("phone");
-      }
+      },
     },
     columns: [
       { data: "maDonHang" },
@@ -20,11 +20,38 @@ $(document).ready(function () {
       { data: "huyen" },
       { data: "xa" },
       { data: "chiTiet" },
-      { data: "gia" }
+      { data: "gia" },
+      {
+        data: null,
+        orderable: false,
+        searchable: false,
+        render: function (data, type, row) {
+          return `<button class="btn btn-danger btn-sm delete-btn" data-id="${row.maDonHang}">Delete</button>`;
+        },
+      },
     ],
     pageLength: 5,
     lengthMenu: [5, 10, 25, 50],
     order: [[0, "asc"]],
+  });
+
+  // Handle delete button click
+  $('#example tbody').on('click', '.delete-btn', function () {
+    var orderId = $(this).data('id');
+    if (confirm('Are you sure you want to delete this order?')) {
+      $.ajax({
+        url: `http://localhost:8080/api/orders/${orderId}`,
+        type: 'DELETE',
+        success: function (response) {
+          alert('Order deleted successfully!');
+          table.ajax.reload(); // Reload the table data
+        },
+        error: function (xhr, status, error) {
+          alert('Failed to delete the order. Please try again.');
+          console.error('Error:', error);
+        },
+      });
+    }
   });
 
   // Create hover info div
@@ -34,12 +61,16 @@ $(document).ready(function () {
     var row = this;
     hoverTimeout = setTimeout(function () {
       var data = table.row(row).data();
-      hoverInfo.text(`Receiver phone number: ${data.sdtNguoiNhan}, created_at: ${data.ngayTao}, status: ${data.tinhTrang}`);
+      hoverInfo.text(
+        `Receiver phone number: ${data.sdtNguoiNhan}, created_at: ${data.ngayTao}, status: ${data.tinhTrang}`
+      );
       var position = $(row).offset();
-      hoverInfo.css({
-        top: position.top + $(row).height() + 5, // Position below the row
-        left: position.left
-      }).fadeIn();
+      hoverInfo
+        .css({
+          top: position.top + $(row).height() + 5, // Position below the row
+          left: position.left,
+        })
+        .fadeIn();
     }, 500); // Delay of 500ms (you can adjust this value)
   });
 
@@ -49,5 +80,3 @@ $(document).ready(function () {
     hoverInfo.fadeOut();
   });
 });
-
-

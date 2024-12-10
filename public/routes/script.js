@@ -29,7 +29,8 @@ $(document).ready(function () {
           return data.tinhKT + ", " + data.huyenKT + ", " + data.xaKT + ", " + data.chiTietKT;
         },
       },
-      { data: "tinhTrang" }
+      { data: "quangDuong" },
+      { data: "tinhTrang" },
     ],
     pageLength: 5,
     lengthMenu: [5, 10, 25, 50],

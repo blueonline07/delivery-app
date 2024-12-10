@@ -33,7 +33,7 @@ router.post("/data", async (req, res) => {
       FROM Tuyen r INNER JOIN DonHang o ON  r.donHang = o.maDonHang\
       WHERE o.nguoiTaoDon = @user AND o.maDonHang LIKE @searchValue \
       ORDER BY " + columns[order[0].column].data + " " + order[0].dir + " OFFSET @start ROWS FETCH NEXT @length ROWS ONLY");
-
+    
     res.json({
       draw,
       recordsTotal: totalRecords.recordset[0].total,

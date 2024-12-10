@@ -103,5 +103,16 @@ router.put("/:id/", async (req, res) => {
   }
 });
 
+router.delete("/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    await pool.request().input("id", sql.NVarChar, id).query("EXEC delete_order @id");
+    res.json({ message: "Order deleted successfully!" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
 
 export default router;

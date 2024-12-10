@@ -31,6 +31,39 @@
   </style>
 </head>
 <body>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="/">Delivery App</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="/orders">Services</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/routes">Tracker</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/payment">Payment</a>
+          </li>
+          <!-- User-related link, shown if logged in -->
+          <li class="nav-item" id="user-name-container" style="display: none;">
+            <span class="nav-link" id="user-name"></span>
+          </li>
+          <!-- Logout button, shown if logged in -->
+          <li class="nav-item" id="logout-link" style="display: none;">
+            <button class="btn btn-danger" id="logout-btn">Logout</button>
+          </li>
+          <!-- Login link, shown if not logged in -->
+          <li class="nav-item" id="login-link">
+            <a class="nav-link" href="/login">Login</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
   <div class="container mt-5">
     <div class="transaction-container">
       <h2 class="transaction-header">Giao Dịch Hóa Đơn</h2>
@@ -72,6 +105,7 @@
 
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js"></script>
+  <script src="../../state.js"></script>
   <script>
     $(document).ready(function () {
       // Giả lập dữ liệu giao dịch (có thể thay thế bằng API)

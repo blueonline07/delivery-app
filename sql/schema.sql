@@ -1,3 +1,5 @@
+--function
+
 GO
 CREATE FUNCTION calc_age
 (
@@ -17,7 +19,8 @@ BEGIN
 END;
 GO
 
--- Cac bang lien quan den nguoi` dung, tram va cac thuc the vat ly khac
+
+--schema
 
 CREATE TABLE NguoiDung (
 	sdt CHAR(10) PRIMARY KEY, ---mobilephone only
@@ -210,13 +213,113 @@ CREATE TABLE GiaoDich(
     hoaDon CHAR(10) NOT NULL,
     CONSTRAINT transBill_fk FOREIGN KEY(hoaDon) REFERENCES HoaDon(maHoaDon) ON DELETE CASCADE,
     soTien INT NOT NULL,
-    thoiDiem DATETIME NOT NULL,
+    thoiDiem DATETIME DEFAULT GETDATE(),
     phuongThuc NVARCHAR(MAX),
     CONSTRAINT transMethod_check CHECK (phuongThuc = N'Tiền mặt' OR phuongThuc = N'Thẻ' OR phuongThuc = N'Chuyển khoản'),
     tinhTrang NVARCHAR(MAX),
     CONSTRAINT transStt_check CHECK (tinhTrang = N'Thành công' OR tinhTrang = N'Thất bại')
 );
 
+
+-- trigger
+
+GO
+CREATE OR ALTER TRIGGER friend_check
+ON BanBe
+AFTER INSERT
+AS
+BEGIN
+		IF TRIGGER_NESTLEVEL() > 1
+				RETURN;
+		DECLARE @ngDung1 CHAR(10), @ngDung2 CHAR(10);
+		SELECT @ngDung1 = ngDung1, @ngDung2 = ngDung2 FROM inserted;
+		IF @ngDung1 = @ngDung2
+		BEGIN
+				PRINT N'Không thể kết bạn với chính mình';
+				ROLLBACK TRANSACTION;
+		END
+END;
+
+
+GO 
+CREATE OR ALTER TRIGGER manager_check
+ON Tram
+AFTER INSERT
+AS
+BEGIN
+		IF TRIGGER_NESTLEVEL() > 1
+				RETURN;
+		DECLARE @sdt CHAR(10);
+		DECLARE @tram INT;
+		SELECT @sdt = nguoiQuanLy, @tram = stt FROM inserted;
+        IF @sdt != NULL
+            IF NOT EXISTS (SELECT 1 FROM TramLamViec WHERE nhanVien = @sdt AND tram = @tram)
+            BEGIN
+                    PRINT N'Người quản lý không làm việc ở trạm này';
+                    ROLLBACK TRANSACTION;
+            END
+END;
+
+GO
+CREATE OR ALTER TRIGGER route_check
+ON Tuyen
+AFTER INSERT
+AS
+BEGIN
+    -- Avoid nested trigger execution
+    IF TRIGGER_NESTLEVEL() > 1
+        RETURN;
+
+    -- Check for duplicates in all rows in the inserted table
+    IF EXISTS (
+        SELECT 1
+        FROM inserted
+        WHERE tinhBD = tinhKT
+          AND huyenBD = huyenKT
+          AND xaBD = xaKT
+          AND chiTietBD = chiTietKT
+    )
+    BEGIN
+        PRINT N'Điểm đầu và điểm cuối không thể trùng nhau';
+        ROLLBACK TRANSACTION;
+    END
+END;
+
+
+GO
+CREATE OR ALTER TRIGGER trg_HashNguoiDungPassword
+ON NguoiDung
+AFTER INSERT, UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    -- Update the hashed password, ensuring UTF-8 encoding
+    UPDATE N
+    SET N.matKhau = CONVERT(VARCHAR(64), 
+        HASHBYTES('SHA2_256', CAST(I.matKhau AS VARBINARY(MAX))), 2)
+    FROM NguoiDung N
+    INNER JOIN inserted I
+    ON N.sdt = I.sdt;
+END;
+GO
+
+CREATE OR ALTER TRIGGER phone_check
+ON DonHang
+AFTER INSERT
+AS
+BEGIN
+    IF TRIGGER_NESTLEVEL() > 1
+        RETURN;
+    DECLARE @sdt CHAR(10);
+    DECLARE @nguoiTao CHAR(10);
+    SELECT @sdt = sdtNguoiNhan, @nguoiTao = nguoiTaoDon FROM inserted;
+    IF @sdt = @nguoiTao
+    BEGIN
+        PRINT N'Không thể giao hàng cho chính mình';
+        ROLLBACK TRANSACTION;
+    END
+END;
 
 
 
