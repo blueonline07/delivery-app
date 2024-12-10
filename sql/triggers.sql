@@ -170,6 +170,28 @@ BEGIN
 END;
 
 
+CREATE OR ALTER TRIGGER trg_HashNguoiDungPassword
+ON NguoiDung
+AFTER INSERT, UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    -- Secret key
+    DECLARE @Secret NVARCHAR(10) = 'haha';
+
+    -- Update the hashed password, ensuring UTF-8 encoding
+    UPDATE N
+    SET N.matKhau = CONVERT(VARCHAR(64), 
+        HASHBYTES('SHA2_256', CAST(I.matKhau AS VARBINARY(MAX)) + CAST(@Secret AS VARBINARY(MAX))), 2)
+    FROM NguoiDung N
+    INNER JOIN inserted I
+    ON N.sdt = I.sdt;
+END;
+GO
+
+
+
 GO
 CREATE OR ALTER TRIGGER trg_UpdateGiaDonHang
 ON GoiHang
