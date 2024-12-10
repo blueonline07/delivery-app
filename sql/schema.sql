@@ -1,10 +1,29 @@
+GO
+CREATE FUNCTION calc_age
+(
+    @bday DATE
+)
+RETURNS INT
+AS
+BEGIN
+    DECLARE @age INT;
+    SET @age = DATEDIFF(YEAR, @bday, GETDATE());
+    IF (MONTH(@bday) > MONTH(GETDATE())) 
+        OR (MONTH(@bday) = MONTH(GETDATE()) AND DAY(@bday) > DAY(GETDATE()))
+    BEGIN
+        SET @age = @age - 1;
+    END;
+    RETURN @age
+END;
+GO
+
 -- Cac bang lien quan den nguoi` dung, tram va cac thuc the vat ly khac
 
 CREATE TABLE NguoiDung (
 	sdt CHAR(10) PRIMARY KEY, ---mobilephone only
-  	email VARCHAR(50),
+  	email NVARCHAR(255) UNIQUE,
     CONSTRAINT email_check CHECK (email LIKE '%_@__%.__%'), 
- 	hoTen NVARCHAR(50),
+ 	hoTen NVARCHAR(MAX),
  	namSinh DATE,
     CONSTRAINT age_check CHECK (dbo.calc_age(namSinh) >= 16 AND dbo.calc_age(namSinh) <= 100), 
  	matKhau VARCHAR(64),
@@ -29,10 +48,10 @@ CREATE TABLE BanBe(
 CREATE TABLE KhachHang (
     sdt CHAR(10) PRIMARY KEY,
     CONSTRAINT customerPhone_fk FOREIGN KEY(sdt) REFERENCES NguoiDung(sdt) ON DELETE CASCADE ON UPDATE CASCADE,
-    xa NVARCHAR(20),
-    huyen NVARCHAR(20),
-    tinh NVARCHAR(20),
-    chiTiet NVARCHAR(30)
+    xa NVARCHAR(MAX),
+    huyen NVARCHAR(MAX),
+    tinh NVARCHAR(MAX),
+    chiTiet NVARCHAR(MAX)
 );
 
 CREATE TABLE NhanVien (
@@ -60,7 +79,7 @@ CREATE TABLE BangLai (
     sdt CHAR(10) NOT NULL,
     loaiBang CHAR(2),
     ngayHetHan DATE,
-    CONSTRAINT license_check CHECK (loaiBang = 'A1' OR loaiBang = 'A2'), --con nua
+    CONSTRAINT license_check CHECK (loaiBang = 'A1' OR loaiBang = 'A2' OR loaiBang = 'B1' OR loaiBang = 'B2' OR loaiBang ='C1'), --con nua
     PRIMARY KEY(sdt, loaiBang)
 );
 
@@ -71,7 +90,7 @@ CREATE TABLE NguoiQuanLy (
 
 CREATE TABLE CapBac (
     nguoiQuanLy CHAR(10),
-    capBac NVARCHAR(20),
+    capBac NVARCHAR(255),
     CONSTRAINT mgrLevel_fk FOREIGN KEY(nguoiQuanLy) REFERENCES NguoiQuanLy(sdt) ON DELETE CASCADE ON UPDATE CASCADE,
     PRIMARY KEY(nguoiQuanLy, capBac)
 );
@@ -80,10 +99,10 @@ CREATE TABLE Tram (
     stt INT IDENTITY(1,1) PRIMARY KEY,
     nguoiQuanLy CHAR(10), 
     CONSTRAINT stationManger_fk FOREIGN KEY(nguoiQuanLy) REFERENCES NguoiQuanLy(sdt),
-    xa NVARCHAR(20),
-    huyen NVARCHAR(20),
-    tinh NVARCHAR(20),
-    chiTiet NVARCHAR(20)
+    xa NVARCHAR(MAX),
+    huyen NVARCHAR(MAX),
+    tinh NVARCHAR(MAX),
+    chiTiet NVARCHAR(MAX)
 );
 
 -- DROP TABLE Tram;
@@ -96,21 +115,30 @@ CREATE TABLE TramLamViec(
 );
 
 ---- cac bang lien quan den business logic (don hang, hoa don, ...)
+CREATE TABLE HoaDon (
+    maHoaDon CHAR(10) PRIMARY KEY,
+    tongTien INT NOT NULL,
+    CONSTRAINT totalCheck CHECK (tongTien >= 0),
+    tinhTrang NVARCHAR(MAX) DEFAULT N'Chưa thanh toán',
+    CONSTRAINT billStt_check CHECK (tinhTrang = N'Đã thanh toán' OR tinhTrang = N'Chưa thanh toán' OR tinhTrang = N'Đã huỷ')
+);
 
 CREATE TABLE DonHang (
     maDonHang CHAR(10) PRIMARY KEY,        
     nguoiTaoDon CHAR(10),
     CONSTRAINT cusOrder_fk FOREIGN KEY(nguoiTaoDon) REFERENCES KhachHang(sdt) ON DELETE CASCADE ON UPDATE CASCADE,           
     sdtNguoiNhan CHAR(10) NOT NULL,
-    hoTenNguoiNhan NVARCHAR(50) NOT NULL,     
-    tinhTrang NVARCHAR(10) DEFAULT N'Đang giao', 
+    hoTenNguoiNhan NVARCHAR(MAX) NOT NULL,     
+    tinhTrang NVARCHAR(MAX) DEFAULT N'Đang giao', 
     CONSTRAINT ordStt_check CHECK (tinhTrang = N'Đã giao' OR tinhTrang = N'Đang giao' OR tinhTrang = N'Đã huỷ') ,
     ngayTao DATE DEFAULT GETDATE(),     
     gia INT DEFAULT 0,               
-    xa NVARCHAR(20) NOT NULL,           
-    huyen NVARCHAR(20) NOT NULL,             
-    tinh NVARCHAR(20) NOT NULL,              
-    chiTiet NVARCHAR(30)            
+    xa NVARCHAR(MAX) NOT NULL,           
+    huyen NVARCHAR(MAX) NOT NULL,             
+    tinh NVARCHAR(MAX) NOT NULL,              
+    chiTiet NVARCHAR(MAX),
+    hoaDon CHAR(10),
+    CONSTRAINT bill_fk FOREIGN KEY(hoaDon) REFERENCES HoaDon(maHoaDon) ON DELETE SET NULL
 );
 
 -- SELECT * FROM DonHang;
@@ -121,7 +149,7 @@ CREATE TABLE GoiHang (
     canNang INT NOT NULL,
     gia INT DEFAULT 0,
     CONSTRAINT m_check CHECK (canNang > 0),
-    moTa NVARCHAR(100),
+    moTa NVARCHAR(MAX),
     CONSTRAINT pkgOrd_fk FOREIGN KEY(donHang) REFERENCES DonHang(maDonHang) ON DELETE CASCADE,
     PRIMARY KEY (donHang, stt)
 );
@@ -132,17 +160,17 @@ CREATE TABLE Tuyen(
     CONSTRAINT routeOrd_fk FOREIGN KEY (donHang) REFERENCES DonHang(maDonHang) ON DELETE CASCADE,
     stt INT,
     PRIMARY KEY(donHang, stt),
-    tinhTrang NVARCHAR(20),
+    tinhTrang NVARCHAR(MAX),
     CONSTRAINT routeStt_check CHECK (tinhTrang = N'Hoàn thành' OR tinhTrang = N'Chưa hoàn thành'),
     quangDuong INT,
-    xaBD NVARCHAR(20),
-    huyenBD NVARCHAR(20),
-    tinhBD NVARCHAR(20),
-    chiTietBD NVARCHAR(30),
-    xaKT NVARCHAR(20),
-    huyenKT NVARCHAR(20),
-    tinhKT NVARCHAR(20),
-    chiTietKT NVARCHAR(30)
+    xaBD NVARCHAR(MAX),
+    huyenBD NVARCHAR(MAX),
+    tinhBD NVARCHAR(MAX),
+    chiTietBD NVARCHAR(MAX),
+    xaKT NVARCHAR(MAX),
+    huyenKT NVARCHAR(MAX),
+    tinhKT NVARCHAR(MAX),
+    chiTietKT NVARCHAR(MAX)
 );
 
 CREATE TABLE DamNhan(
@@ -161,7 +189,7 @@ CREATE TABLE DamNhan(
 
 CREATE TABLE NhanGoiHang(
     maNhan CHAR(3) PRIMARY KEY,
-    loaiHang NVARCHAR(30) NOT NULL,
+    loaiHang NVARCHAR(MAX) NOT NULL,
     phiDichVu INT NOT NULL,
     CONSTRAINT phi_check CHECK (phiDichVu > 0)
 );
@@ -176,35 +204,20 @@ CREATE TABLE DuocGan(
 	CONSTRAINT label_fk FOREIGN KEY (maNhan) REFERENCES NhanGoiHang(maNhan) ON DELETE CASCADE,
 );
 
--- DROP TABLE HoaDon;
-
-CREATE TABLE HoaDon (
-    maHoaDon CHAR(10) PRIMARY KEY,
-    tongTien INT NOT NULL,
-    CONSTRAINT totalCheck CHECK (tongTien >= 0),
-    tinhTrang NVARCHAR(20) DEFAULT N'Chưa thanh toán',
-    CONSTRAINT billStt_check CHECK (tinhTrang = N'Đã thanh toán' OR tinhTrang = N'Chưa thanh toán' OR tinhTrang = N'Đã huỷ')
-);
-
 
 CREATE TABLE GiaoDich(
     maGiaoDich CHAR(10) PRIMARY KEY,
     hoaDon CHAR(10) NOT NULL,
     CONSTRAINT transBill_fk FOREIGN KEY(hoaDon) REFERENCES HoaDon(maHoaDon) ON DELETE CASCADE,
-    soTien DECIMAL (10, 2) NOT NULL,
+    soTien INT NOT NULL,
     thoiDiem DATETIME NOT NULL,
-    phuongThuc NVARCHAR(20),
+    phuongThuc NVARCHAR(MAX),
     CONSTRAINT transMethod_check CHECK (phuongThuc = N'Tiền mặt' OR phuongThuc = N'Thẻ' OR phuongThuc = N'Chuyển khoản'),
-    tinhTrang NVARCHAR(10),
+    tinhTrang NVARCHAR(MAX),
     CONSTRAINT transStt_check CHECK (tinhTrang = N'Thành công' OR tinhTrang = N'Thất bại')
 );
 
-CREATE TABLE ThanhToan ( 
-    hoaDon CHAR(10) NOT NULL,
-    donHang CHAR(10) NOT NULL,
-    CONSTRAINT bill_fk FOREIGN KEY (hoaDon) REFERENCES HoaDon(maHoaDon) ON DELETE CASCADE,
-    CONSTRAINT ord_fk FOREIGN KEY (donHang) REFERENCES DonHang(maDonHang) ON DELETE CASCADE
-);
+
 
 
 -- USE master;
