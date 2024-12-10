@@ -58,7 +58,10 @@ $(document).ready(function () {
       $(".orderCheckbox").prop("checked", isChecked);
   
       if (isChecked) {
-        selectedData = table.rows().data().toArray();
+        for (let i = 0; i < table.rows().data().length; i++) {
+          const rowData = table.row(i).data().maDonHang;
+          selectedData.push(rowData);
+        }
       } else {
         selectedData = [];
       }
@@ -102,10 +105,10 @@ $(document).ready(function () {
         data: JSON.stringify(selectedData), // Chuyển mảng dữ liệu thành JSON
         success: function (response) {
           alert("Tạo đơn thành công!");
-          console.log("Server response:", response);
-    
+          const billId = response.hoadonID;
           // Chuyển hướng sau khi thanh toán thành công
-          // window.location.href = "/payment/bill";
+          const paymentUrl = `/payment/bill/?billId=${billId}`; 
+          window.location.href = paymentUrl;
         },
         error: function (error) {
           alert("Đã xảy ra lỗi khi thanh toán. Vui lòng thử lại.");

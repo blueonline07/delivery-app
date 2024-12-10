@@ -63,8 +63,8 @@
           </div>
         </div>
         <div class="d-flex justify-content-between mb-3">
-          <a href="/orders/create" class="btn btn-primary">Quay lại</a>
-          <a href="/payment/bill" class="btn btn-primary" style="background-color: green;">Thực hiện giao dịch</a>
+          <a  class="btn btn-primary" onclick=quayLai()>Quay lại</a>
+          <a  class="btn btn-primary" style="background-color: green;" onclick=thucHienGiaoDich()>Thực hiện giao dịch</a>
         </div>
       </form>
     </div>
@@ -75,21 +75,73 @@
   <script>
     $(document).ready(function () {
       // Giả lập dữ liệu giao dịch (có thể thay thế bằng API)
-      const transactionData = {
-        maHoaDon: "HD123456",
-        name: "Nguyễn Văn A",
-        phone: "0123456789",
-        email: "nguyenvana@example.com"
-      };
 
+    async function quayLai() {
+        // Xử lý quay lại
+
+
+        window.history.back(); // Quay lại trang trước
+        console.log("Đã quay lại trang trước.");
+    }
+
+    async function thucHienGiaoDich() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const invoiceId = urlParams.get("transaction");
+
+      const soTien = $('#soTien').val();
+      const phuongThuc = $('#phuongThuc').val();
+
+      console.log("Thông tin giao dịch:", { invoiceId, soTien, phuongThuc });
+      if (!phuongThuc || !soTien) {
+        alert("Vui lòng nhập đủ thông tin giao dịch.");
+        return;
+      }
+
+      try {
+        const response = await $.ajax({
+          url: `http://localhost:8080/api/payments/transaction/${invoiceId}`,
+          type: 'POST',
+          contentType: 'application/json',
+          data: JSON.stringify({
+            soTien,
+            hinhThuc: phuongThuc,
+            tinhTrang: "Thất bại" // Ví dụ gán mặc định
+          }),
+        });
+
+        alert("Giao dịch thành công!");
+        console.log("Kết quả giao dịch:", response);
+      } catch (error) {
+        console.error("Lỗi khi thực hiện giao dịch:", error);
+        alert("Thực hiện giao dịch thất bại.");
+      }
+    }
+
+    // Gắn các hàm vào phạm vi toàn cục để sử dụng trong HTML
+    window.quayLai = quayLai;
+    window.thucHienGiaoDich = thucHienGiaoDich;
+      loadDataTable();
+      async function loadDataTable(){
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const invoiceId = urlParams.get("transaction"); // Lấy `billId` từ URL
+        $('#invoiceId').text(invoiceId);
+        const orders = await $.ajax({
+          url: `http://localhost:8080/api/payments/transaction/${invoiceId}`,
+          type: 'GET',
+          dataType: 'json'
+        });
+        $('.user-info').html(`
+        <h5>Thông Tin Giao Dịch</h5>
+        <p><strong>Mã Hóa Đơn:</strong> ${orders[0].maHoaDon}</p>
+        <p><strong>Tên Người Giao Dịch:</strong> ${orders[0].hoTen}</p>
+        <p><strong>Số Điện Thoại:</strong> ${orders[0].sdt}</p>
+      `);
+      $('#soTien').val(orders[0].tongTien);
+      };
       // Hiển thị thông tin giao dịch
       $('#displayMaHoaDon').text(transactionData.maHoaDon);
-      $('.user-info').html(`
-        <h5>Thông Tin Giao Dịch</h5>
-        <p><strong>Mã Hóa Đơn:</strong> ${transactionData.maHoaDon}</p>
-        <p><strong>Tên Người Giao Dịch:</strong> ${transactionData.name}</p>
-        <p><strong>Số Điện Thoại:</strong> ${transactionData.phone}</p>
-      `);
+      
     });
   </script>
 </body>

@@ -43,7 +43,23 @@ router.post("/data", async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 });
-
+router.get("/bill/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const result = await pool
+      .request()
+      .query(
+        `SELECT HD.maHoaDon, HD.tongTien, HD.tinhTrang, DH.maDonHang, DH.hoTenNguoiNhan, DH.sdtNguoiNhan, DH.ngayTao, DH.gia, DH.tinh, DH.huyen, DH.xa, DH.chiTiet
+         FROM HoaDon HD
+         JOIN DonHang DH ON HD.maHoaDon = DH.hoaDon
+         WHERE HD.maHoaDon = '${id}'`
+      );
+    res.status(200).json(result.recordset);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
+  }
+});
 router.post("/make", async (req, res) => {
   const selectedOrders = req.body
   try {
@@ -66,57 +82,71 @@ router.post("/make", async (req, res) => {
         `INSERT INTO HoaDon VALUES
         ('${hoadonID}', 0, N'Chưa thanh toán')`
       );
-    
+    console.log(selectedOrders);
     selectedOrders.forEach(async (element) => {
       await pool
         .request()
         .query("UPDATE DonHang SET hoaDon = '" + hoadonID + "' WHERE maDonHang = '" + element + "'");
     });
-  //   const newId = result.output.NewID;
-  //   console.log(newId);
-  //   packages.forEach(async (element) => {
-  //     await pool
-  //       .request()
-  //       .input("description", sql.NVarChar, element.description)
-  //       .input("weight", sql.Float, element.weight)
-  //       .input("labels", sql.NVarChar, element.labels)
-  //       .input("orderId", sql.NVarChar, newId)
-  //       .query("EXEC add_pkg @orderId, @description, @weight, @labels");
-  //   });
-    
-  //   res.status(201).json({ message: "Order added successfully!" });
-  // } catch (error) {
-  //   console.error(error);
-  //   res.status(500).send("Internal Server Error");
+    res.status(201).json({ hoadonID });
   } catch (error) {
     console.error(error);
     res.status(500).send("Internal Server Error");
   }
 });
 
-router.put("/:id/", async (req, res) => {
+router.get("/transaction/:id/", async (req, res) => {
   const { id } = req.params;
-  const { receiverPhone, receiver, province, district, commune, detail } = req.body;
   try {
-    await pool
+    console.log(id);
+    let response = await pool
       .request()
-      .input("id", sql.NVarChar, id)
-      .input("receiverPhone", sql.NVarChar, receiverPhone)
-      .input("receiver", sql.NVarChar, receiver)
-      .input("province", sql.NVarChar, province)
-      .input("district", sql.NVarChar, district)
-      .input("commune", sql.NVarChar, commune)
-      .input("detail", sql.NVarChar, detail)
       .query(
-        "EXEC update_order @id, @receiverPhone, @receiver, @province, @district, @commune, @detail"
+        ` SELECT HD.maHoaDon, ND.hoTen , ND.sdt , SUM(DH.gia) as tongTien
+          FROM HoaDon HD
+          JOIN DonHang DH ON HD.maHoaDon = DH.hoaDon
+          JOIN NguoiDung ND ON DH.nguoiTaoDon = ND.sdt
+          WHERE HD.maHoaDon = '${id}'
+          GROUP BY HD.maHoaDon, ND.hoTen , ND.sdt
+          `
+      );
+    console.log(response.recordset);
+    res.json(response.recordset);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+router.post("/transaction/:id/", async (req, res) => {
+  const { id } = req.params; // Mã hóa đơn
+  const { soTien, hinhThuc, tinhTrang } = req.body; // Nhận thông tin từ request body
+  const thoiGian = new Date(); // Lấy thời gian hiện tại
+  console.log(id, soTien, hinhThuc, tinhTrang, thoiGian);
+  try {
+    const result = await pool.request()
+      .query("SELECT TOP 1 maGiaoDich FROM GiaoDich WHERE maGiaoDich LIKE 'GD%' ORDER BY maGiaoDich DESC");
+    const latestOrderID = result.recordset[0]?.maGiaoDich;
+    let giaodichID;
+      // Kiểm tra kết quả và in ra
+    if (latestOrderID) {
+        giaodichID = latestOrderID.slice(2);
+        let number = parseInt(giaodichID) + 1;
+        giaodichID = "GD" + number.toString().padStart(8, "0");
+    } else {
+      giaodichID = "GD00000001";
+    }
+    const response = await pool.request()
+      .query(
+        `INSERT INTO GiaoDich (maGiaoDich, hoaDon, soTien, phuongThuc, tinhTrang, thoiDiem)
+         VALUES ('${giaodichID}', '${id}', ${soTien}, N'${hinhThuc}', N'${tinhTrang}', '${thoiGian.toISOString()}')`
       );
 
-    res.json({ message: "Order updated successfully!" });
+    console.log(response.recordset);
+    res.json({ success: true, message: "Giao dịch thành công", data: response.recordset });
   } catch (error) {
     console.error(error);
-    res.status(500).send("Internal Server Error");
+    res.status(500).send("Internal Server Error"+ error);
   }
 });
-
-
 export default router;

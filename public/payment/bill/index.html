@@ -31,12 +31,11 @@
       <!-- Thông tin hóa đơn -->
       <div class="row mb-4">
         <div class="col-md-6">
-          <p><strong>Mã hóa đơn:</strong> HD123456</p>
-          <p><strong>Ngày tạo:</strong> 08/12/2024</p>
+          <p><strong>Mã hóa đơn:</strong> <span id="invoiceId"></span></p>
+          <p><strong>Ngày tạo:</strong> <span id="creationDate"></span></p>
         </div>
         <div class="col-md-6">
-          <p><strong>Khách hàng:</strong> Nguyễn Văn A</p>
-          <p><strong>Địa chỉ:</strong> 123 Đường ABC, Quận 1, TP.HCM</p>
+          <p><strong>Trạng thái:</strong> <span id="status"></span></p>
         </div>
       </div>
 
@@ -50,7 +49,7 @@
             <th>District</th>
             <th>Commune</th>
             <th>Detail</th>
-            <th>Status</th>
+            <th>Price</th>
           </tr>
         </thead>
         <tbody id="orderContent"></tbody>
@@ -58,18 +57,17 @@
 
       <div class="row mt-3">
         <div class="col-md-6">
-          <p><strong>Tổng tiền:</strong> 1,300,000 VND</p>
+          <p><strong>Tổng tiền:</strong> <span id="totalAmount"></span> VND</p>
         </div>
         <div class="d-flex justify-content-between mb-3">
           <a class="btn btn-primary btn-transaction" href="/payment/">Quay lại</a>
-          <a class="btn btn-primary btn-transaction" href="/payment/transaction/">Giao dịch</a>
+          <a class="btn btn-primary btn-transaction" id="paymentBtn">Giao dịch</a>
         </div>
       </div>
     </div>
   </div>
 
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-  <script src="./script.js">
-  </script>
+  <script src="./script.js"></script>
 </body>
 </html>
