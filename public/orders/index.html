@@ -1,106 +1,127 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Order List</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
-  <style>
-    .action-buttons {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 20px;
-    }
-    .order_id{
-        width: 12%;
-    }
-    .checkbox-column {
-      width: 5%;
-      text-align: center;
-    }
-  </style>
+  <title>Orders Page</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.5/css/jquery.dataTables.min.css" />
+  <link rel="stylesheet" href="styles.css">
 </head>
-<body>
-  <div class="container mt-5">
-    <h3 class="text-center">Danh sách đơn hàng</h3>
-    
-    <!-- Order Table -->
-    <table class="table table-striped table-bordered mt-3" style="width: 100%;">
-      <thead class="thead-dark">
-        <tr>
-          <th class="checkbox-column">
-            <input type="checkbox" id="selectAll">
-          </th>
-          <th class="order_id">Mã đơn hàng</th>
-          <th style="width: 12%;">Ngày tạo</th>
-          <th style="width:17%;">Tên người nhận</th>
-          <th>SDT</th>
-          <th style="width:fit-content;">Địa chỉ nhận</th>
-          <th style="width: fit-content;">Tình trạng</th>
-        </tr>
-      </thead>
-      <tbody id="orderList">
-        <!-- Data rows will be dynamically added here -->
-      </tbody>
-    </table>
 
-    <!-- Action Buttons -->
-    <div class="action-buttons">
-      <button class="btn btn-primary" id="createOrderBtn">Tạo đơn hàng mới</button>
-      <button class="btn btn-success" id="payOrderBtn">Thanh toán</button>
-    </div>
+<body>
+  <div>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="/">Delivery App</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+          aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="/orders">Services</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/routes">Tracker</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/">Payment</a>
+            </li>
+            <!-- User-related link, shown if logged in -->
+            <li class="nav-item" id="user-name-container" style="display: none;">
+              <span class="nav-link" id="user-name"></span>
+            </li>
+            <!-- Logout button, shown if logged in -->
+            <li class="nav-item" id="logout-link" style="display: none;">
+              <button class="btn btn-danger" id="logout-btn">Logout</button>
+            </li>
+            <!-- Login link, shown if not logged in -->
+            <li class="nav-item" id="login-link">
+              <a class="nav-link" href="/login">Login</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
   </div>
 
-  <!-- Scripts -->
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script>
-    $(document).ready(function () {
-      // Mock data for orders
-      const orders = [
-        { id: 'DH001', date: '2024-12-01', name: 'Nguyễn Văn A', phone: '', address: 'Hà Nội', status: 'Đang xử lý' },
-        { id: 'DH002', date: '2024-12-02', name: 'Trần Thị B',phone: '', address: 'TP.HCM', status: 'Hoàn thành' },
-        { id: 'DH003', date: '2024-12-03', name: 'Lê Văn C', phone: '',address: 'Đà Nẵng', status: 'Đang xử lý' }
-      ];
+  <div class="container table-responsive ">
+    <h3 class="mt-5">Orders</h3>
+    <table id="example" class="display table table-striped table-bordered mt-5 wrapper">
+      <thead>
+        <tr>
+          <th>OrderID</th>
+          <th>Receiver</th>
+          <th>Province</th>
+          <th>District</th>
+          <th>Commune</th>
+          <th>Detail</th>
+          <th>Price</th>
+        </tr>
+      </thead>
+    </table>
+    <a href="/orders/create" class="btn btn-primary">Create New Order</a>
+  </div>
 
-      // Function to render order rows
-      function renderOrders() {
-        const orderList = $("#orderList");
-        orderList.empty(); // Clear previous rows
-        orders.forEach(order => {
-          const row = `
-            <tr>
-               <td class="checkbox-column">
-                <input type="checkbox" class="orderCheckbox">
-              </td>
-              <td>${order.id}</td>
-              <td>${order.date}</td>
-              <td>${order.name}</td>
-              <td>${order.phone}</td>
-              <td>${order.address}</td>
-              <td>${order.status}</td>
-            </tr>
-          `;
-          orderList.append(row);
-        });
-      }
-
-      // Render initial orders
-      renderOrders();
-      $("#selectAll").on("change", function () {
-        $(".orderCheckbox").prop("checked", $(this).prop("checked"));
-      });
-      // Handle "Tạo đơn hàng mới" button click
-      $("#createOrderBtn").on("click", function () {
-        alert("Tính năng tạo đơn hàng mới!");
-        // Implement form/modal logic here
-      });
-
-      // Handle "Thanh toán" button click
-      $("#payOrderBtn").on("click", function () {
-        alert("Tính năng thanh toán!");
-        // Implement payment logic here
-      });
-    });
-  </script>
+  <!-- Modal for Editing -->
+  <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editModalLabel">Edit Order</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="editForm">
+            <div class="mb-3">
+              <label for="ord_id" class="form-label">Order ID</label>
+              <input type="text" class="form-control" id="ord_id" readonly>
+            </div>
+            <div class="mb-3">
+              <label for="rcv_phone" class="form-label">Receiver's Phone</label>
+              <input type="text" class="form-control" id="rcv_phone" readonly>
+            </div>
+            <div class="mb-3">
+              <label for="receiver" class="form-label">Receiver</label>
+              <input type="text" class="form-control" id="receiver">
+            </div>
+            <div class="mb-3">
+              <label for="tinh" class="form-label">Province</label>
+              <select class="form-control" id="tinh" name="tinh" required>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="huyen" class="form-label">District</label>
+              <select class="form-control" id="huyen" name="huyen" required>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="xa" class="form-label">Commune</label>
+              <select class="form-control" id="xa" name="xa" required>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="chiTiet" class="form-label">Detail</label>
+              <textarea class="form-control" id="chiTiet"></textarea>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" id="saveChanges" >Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="./script.js"></script>
+  <script src="create/script.js"></script>
+  <script src="../state.js"></script>
 </body>
+
 </html>

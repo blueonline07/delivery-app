@@ -10,67 +10,67 @@
         rel="stylesheet"
         href="https://cdn.datatables.net/1.13.5/css/jquery.dataTables.min.css"
     />
+    <style>
+      .wrapper {
+        padding: 20px;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+    </style>
 </head>
 <body>
+    <div>
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="/">Delivery App</a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+              <li class="nav-item">
+                <a class="nav-link" href="/orders">Services</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/routes">Tracker</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/">Payment</a>
+              </li>
+              <!-- User-related link, shown if logged in -->
+              <li class="nav-item" id="user-name-container" style="display: none;">
+                <span class="nav-link" id="user-name"></span>
+              </li>
+              <!-- Logout button, shown if logged in -->
+              <li class="nav-item" id="logout-link" style="display: none;">
+                <button class="btn btn-danger" id="logout-btn">Logout</button>
+              </li>
+              <!-- Login link, shown if not logged in -->
+              <li class="nav-item" id="login-link">
+                <a class="nav-link" href="/login">Login</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+    </div>
     <div class="container table-responsive">
-        <h1>Track Your Routes</h1>
-        <table id="route" class="display table table-striped table-bordered" style="width:100%">
+        <h1>Routes</h1>
+        <table id="routes" class="display table table-striped table-bordered mt-5 wrapper">
             <thead>
                 <tr>
-                    <th>Mã tuyến</th>
+                    <th>STT</th>
                     <th>Từ</th>
                     <th>Đến</th>
-                    <th>Trạm đảm nhận</th>
-                    <th>Người giao</th>
                     <th>Tình trạng</th>
                 </tr>
             </thead>
-            <tbody>
-                <tr>
-                  <td>1</td>
-                  <td>123 Đường ABC, Phường 1, Quận 1, TP HCM</td>
-                  <td>456 Đường DEF, Phường 2, Quận 2, TP HCM</td>
-                  <td>123 Đường ABC, Phường 1, Quận 1, TP HCM</td>
-                  <td>Lê Duy Khang</td>
-                  <td>Hoàn thành</td>
-                </tr>
-                <tr>
-                  <td>2</td>
-                  <td>123 Đường ABC, Phường 1, Quận 1, TP HCM</td>
-                  <td>456 Đường DEF, Phường 2, Quận 2, TP HCM</td>
-                  <td>123 Đường ABC, Phường 1, Quận 1, TP HCM</td>
-                  <td>Lê Duy Khang</td>
-                  <td>Hoàn thành</td>
-                </tr>
-                <tr>
-                  <td>3</td>
-                  <td>789 Đường GHI, Phường 3, Quận 3, TP HCM</td>
-                  <td>101 Đường JKL, Phường 4, Quận 4, TP HCM</td>
-                  <td>789 Đường GHI, Phường 3, Quận 3, TP HCM</td>
-                  <td>Phạm Thị Hoa</td>
-                  <td>Hoàn thành</td>
-                </tr>
-                <tr>
-                  <td>4</td>
-                  <td>101 Đường JKL, Phường 4, Quận 4, TP HCM</td>
-                  <td>112 Đường MNO, Phường 5, Quận 5, TP HCM</td>
-                  <td>101 Đường JKL, Phường 4, Quận 4, TP HCM</td>
-                  <td>Trần Thị Linh</td>
-                  <td>Chưa hoàn thành</td>
-                </tr>
-                <tr>
-                  <td>5</td>
-                  <td>112 Đường MNO, Phường 5, Quận 5, TP HCM</td>
-                  <td>123 Đường ABC, Phường 1, Quận 1, TP HCM</td>
-                  <td>112 Đường MNO, Phường 5, Quận 5, TP HCM</td>
-                  <td>Hoàng Văn Sơn</td>
-                  <td>Hoàn thành</td>
-                </tr>
-            </tbody>
         </table>
     </div>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js"></script>
     <script src="./script.js"></script>
+    <script src="../state.js"></script>
 </body>
 </html>
