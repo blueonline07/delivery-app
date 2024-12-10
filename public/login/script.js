@@ -21,7 +21,7 @@ document.getElementById("login-form").addEventListener("submit", function (e) {
   }
 
   // Validate password length
-  if (passwordInput.value.length < 6) {
+  if (passwordInput.value.length <1) {
     passwordInput.classList.add("is-invalid");
     isValid = false;
   } else {

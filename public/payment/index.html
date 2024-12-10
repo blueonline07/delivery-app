@@ -53,18 +53,30 @@
     <table id="example" class="display table table-striped table-bordered mt-5 wrapper">
       <thead>
         <tr>
+          <th class="checkbox-column">
+            <div class="checkbox-wrapper">
+              <input type="checkbox" id="selectAll">
+            </div>
+          </th>
           <th>OrderID</th>
           <th>Receiver</th>
           <th>Province</th>
           <th>District</th>
           <th>Commune</th>
           <th>Detail</th>
-          <th>Price</th>
-          <th>Actions</th>
+          <th>Status</th>
         </tr>
       </thead>
     </table>
-    <a href="/orders/create" class="btn btn-primary">Create New Order</a>
+    <div class="d-flex justify-content-between mb-3" style="margin-top: 50px;">
+      <a href="/orders/create" class="btn btn-primary" >Create New Order</a>
+      <a href="javascript:void(0);" 
+        class="btn btn-primary" 
+        style="background-color: green;" 
+        id="paymentBtn">
+        Payment
+      </a>
+    </div>
 
     
   </div>

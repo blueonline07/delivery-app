@@ -91,7 +91,8 @@ AS
 BEGIN
     IF TRIGGER_NESTLEVEL() > 1
         RETURN;
-	IF EXISTS (SELECT 1 FROM inserted)
+
+    IF EXISTS (SELECT 1 FROM inserted)
 	BEGIN
 		UPDATE DH
 		SET DH.gia = DH.gia + ISNULL(TongPhiDichVu, 0)
