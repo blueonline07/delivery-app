@@ -47,7 +47,7 @@ CREATE TABLE BanBe(
 
 CREATE TABLE KhachHang (
     sdt CHAR(10) PRIMARY KEY,
-    CONSTRAINT customerPhone_fk FOREIGN KEY(sdt) REFERENCES NguoiDung(sdt) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT customerPhone_fk FOREIGN KEY(sdt) REFERENCES NguoiDung(sdt) ON DELETE CASCADE,
     xa NVARCHAR(MAX),
     huyen NVARCHAR(MAX),
     tinh NVARCHAR(MAX),
@@ -56,7 +56,7 @@ CREATE TABLE KhachHang (
 
 CREATE TABLE NhanVien (
     sdt CHAR(10) PRIMARY KEY,
-    CONSTRAINT employeePhone_fk FOREIGN KEY(sdt) REFERENCES NguoiDung(sdt) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT employeePhone_fk FOREIGN KEY(sdt) REFERENCES NguoiDung(sdt) ON DELETE CASCADE,
     luong INT,
     CONSTRAINT salary_check CHECK (luong >= 3000000), --min 3tr
     ngayBatDau DATE
@@ -66,32 +66,32 @@ CREATE TABLE TaiXe (
     sdt CHAR(10) PRIMARY KEY,
     kinhNghiem INT,
     CONSTRAINT driverExp_check CHECK (kinhNghiem >= 0),
-    CONSTRAINT phoneDriver_fk FOREIGN KEY(sdt) REFERENCES NhanVien(sdt) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT phoneDriver_fk FOREIGN KEY(sdt) REFERENCES NhanVien(sdt) ON DELETE CASCADE,
 );
 
 CREATE TABLE Xe (
     bienSo VARCHAR(10) PRIMARY KEY,
     taiXe CHAR(10) NOT NULL,
-    CONSTRAINT vehDriver_fk FOREIGN KEY(taiXe) REFERENCES TaiXe(sdt) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT vehDriver_fk FOREIGN KEY(taiXe) REFERENCES TaiXe(sdt) ON DELETE CASCADE,
 );
 
 CREATE TABLE BangLai (
-    sdt CHAR(10) NOT NULL,
+    taiXe CHAR(10) NOT NULL,
     loaiBang CHAR(2),
     ngayHetHan DATE,
-    CONSTRAINT license_check CHECK (loaiBang = 'A1' OR loaiBang = 'A2' OR loaiBang = 'B1' OR loaiBang = 'B2' OR loaiBang ='C1'), --con nua
-    PRIMARY KEY(sdt, loaiBang)
+    CONSTRAINT license_check CHECK (loaiBang IN('A1','A2','B1','B2','C1')), --con nua
+    PRIMARY KEY(taiXe, loaiBang)
 );
 
 CREATE TABLE NguoiQuanLy (
     sdt CHAR(10) PRIMARY KEY,
-    CONSTRAINT managerPhone_fk FOREIGN KEY(sdt) REFERENCES NhanVien(sdt) ON DELETE CASCADE ON UPDATE CASCADE
+    CONSTRAINT managerPhone_fk FOREIGN KEY(sdt) REFERENCES NhanVien(sdt) ON DELETE CASCADE
 );
 
 CREATE TABLE CapBac (
     nguoiQuanLy CHAR(10),
     capBac NVARCHAR(255),
-    CONSTRAINT mgrLevel_fk FOREIGN KEY(nguoiQuanLy) REFERENCES NguoiQuanLy(sdt) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT mgrLevel_fk FOREIGN KEY(nguoiQuanLy) REFERENCES NguoiQuanLy(sdt) ON DELETE CASCADE,
     PRIMARY KEY(nguoiQuanLy, capBac)
 );
 
@@ -110,14 +110,14 @@ CREATE TABLE Tram (
 CREATE TABLE TramLamViec(
     nhanVien CHAR(10) PRIMARY KEY,
     tram INT NOT NULL,
-    CONSTRAINT empWorkAt_fk FOREIGN KEY(nhanVien) REFERENCES NhanVien(sdt) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT empWorkAt_fk FOREIGN KEY(nhanVien) REFERENCES NhanVien(sdt) ON DELETE CASCADE,
     CONSTRAINT stationWorkAt_fk FOREIGN KEY(tram) REFERENCES Tram(stt) ON DELETE CASCADE
 );
 
 ---- cac bang lien quan den business logic (don hang, hoa don, ...)
 CREATE TABLE HoaDon (
     maHoaDon CHAR(10) PRIMARY KEY,
-    tongTien INT NOT NULL,
+    tongTien INT DEFAULT 0,
     CONSTRAINT totalCheck CHECK (tongTien >= 0),
     tinhTrang NVARCHAR(MAX) DEFAULT N'Chưa thanh toán',
     CONSTRAINT billStt_check CHECK (tinhTrang = N'Đã thanh toán' OR tinhTrang = N'Chưa thanh toán' OR tinhTrang = N'Đã huỷ')
@@ -126,7 +126,7 @@ CREATE TABLE HoaDon (
 CREATE TABLE DonHang (
     maDonHang CHAR(10) PRIMARY KEY,        
     nguoiTaoDon CHAR(10),
-    CONSTRAINT cusOrder_fk FOREIGN KEY(nguoiTaoDon) REFERENCES KhachHang(sdt) ON DELETE CASCADE ON UPDATE CASCADE,           
+    CONSTRAINT cusOrder_fk FOREIGN KEY(nguoiTaoDon) REFERENCES KhachHang(sdt) ON DELETE CASCADE,           
     sdtNguoiNhan CHAR(10) NOT NULL,
     hoTenNguoiNhan NVARCHAR(MAX) NOT NULL,     
     tinhTrang NVARCHAR(MAX) DEFAULT N'Đang giao', 
@@ -220,13 +220,13 @@ CREATE TABLE GiaoDich(
 
 
 
--- USE master;
--- DECLARE @sql NVARCHAR(MAX) = N'';
+    -- USE master;
+    -- DECLARE @sql NVARCHAR(MAX) = N'';
 
--- SELECT @sql += 'KILL ' + CAST(session_id AS NVARCHAR(10)) + ';' + CHAR(13)
--- FROM sys.dm_exec_sessions
--- WHERE database_id = DB_ID('delivery');
+    -- SELECT @sql += 'KILL ' + CAST(session_id AS NVARCHAR(10)) + ';' + CHAR(13)
+    -- FROM sys.dm_exec_sessions
+    -- WHERE database_id = DB_ID('delivery');
 
--- EXEC sp_executesql @sql;
+    -- EXEC sp_executesql @sql;
 
--- DROP DATABASE delivery;
+    -- DROP DATABASE delivery;
