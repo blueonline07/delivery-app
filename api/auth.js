@@ -7,7 +7,7 @@ const secret = 'haha'
 
 const router = express.Router();
 
-router.post('', async (req, res) => {
+router.post('/', async (req, res) => {
   const { phone, password } = req.body;
   try {
     const hash = crypto.createHmac('sha256', secret).update(password).digest('hex');
