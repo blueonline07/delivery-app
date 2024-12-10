@@ -65,17 +65,6 @@ BEGIN
 			PRINT N'Bạn không thể giao dịch nữa.';
 			ROLLBACK TRANSACTION;
 		END
-		IF EXISTS (
-			SELECT 1
-			FROM GiaoDich GD
-			JOIN inserted I ON I.hoaDon = GD.hoaDon
-			GROUP BY I.hoaDon
-			HAVING COUNT(GD.hoaDon) > 3
-		)
-		BEGIN
-			PRINT N'Bạn không thể giao dịch nữa. Đơn hàng đã đạt giới hạn giao dịch.';
-			ROLLBACK TRANSACTION;
-		END
 		
 		IF EXISTS(
 			SELECT 1
@@ -111,22 +100,6 @@ BEGIN
 		END
 		END
 	END;
-
--- GO
--- CREATE OR ALTER TRIGGER hash_password
--- ON NguoiDung
--- AFTER INSERT, UPDATE
--- AS
--- BEGIN
---     DECLARE @password NVARCHAR(255);
-
---     SELECT @password = matKhau FROM inserted;
-
---     UPDATE NguoiDung SET matKhau = CONVERT(VARCHAR(64), HASHBYTES('SHA2-256', @password), 2)
---     FROM NguoiDung
---     INNER JOIN inserted ON NguoiDung.sdt = inserted.sdt;
--- END;
-
 
 
 GO
@@ -168,7 +141,7 @@ BEGIN
 		ON DH.maDonHang = T.donHang;
 	END
 END;
-
+GO
 
 CREATE OR ALTER TRIGGER trg_HashNguoiDungPassword
 ON NguoiDung
@@ -177,13 +150,10 @@ AS
 BEGIN
     SET NOCOUNT ON;
 
-    -- Secret key
-    DECLARE @Secret NVARCHAR(10) = 'haha';
-
     -- Update the hashed password, ensuring UTF-8 encoding
     UPDATE N
     SET N.matKhau = CONVERT(VARCHAR(64), 
-        HASHBYTES('SHA2_256', CAST(I.matKhau AS VARBINARY(MAX)) + CAST(@Secret AS VARBINARY(MAX))), 2)
+        HASHBYTES('SHA2_256', CAST(I.matKhau AS VARBINARY(MAX))), 2)
     FROM NguoiDung N
     INNER JOIN inserted I
     ON N.sdt = I.sdt;
@@ -229,5 +199,107 @@ BEGIN
 			GROUP BY GH.donHang
 		) GH 
 		ON DH.maDonHang = GH.donHang;
+	END
+END;
+
+GO
+CREATE OR ALTER TRIGGER friend_check
+ON BanBe
+AFTER INSERT
+AS
+BEGIN
+		IF TRIGGER_NESTLEVEL() > 1
+				RETURN;
+		DECLARE @ngDung1 CHAR(10), @ngDung2 CHAR(10);
+		SELECT @ngDung1 = ngDung1, @ngDung2 = ngDung2 FROM inserted;
+		IF @ngDung1 = @ngDung2
+		BEGIN
+				PRINT N'Không thể kết bạn với chính mình';
+				ROLLBACK TRANSACTION;
+		END
+END;
+
+
+GO 
+CREATE OR ALTER TRIGGER manager_check
+ON Tram
+AFTER INSERT
+AS
+BEGIN
+		IF TRIGGER_NESTLEVEL() > 1
+				RETURN;
+		DECLARE @sdt CHAR(10);
+		DECLARE @tram INT;
+		SELECT @sdt = nguoiQuanLy, @tram = stt FROM inserted;
+
+		IF NOT EXISTS (SELECT 1 FROM TramLamViec WHERE nhanVien = @sdt AND tram = @tram)
+		BEGIN
+				PRINT N'Người quản lý không làm việc ở trạm này';
+				ROLLBACK TRANSACTION;
+		END
+END;
+GO
+CREATE OR ALTER TRIGGER route_check
+ON Tuyen
+AFTER INSERT
+AS
+BEGIN
+		IF TRIGGER_NESTLEVEL() > 1
+				RETURN;
+		DECLARE @tinhBD NVARCHAR(MAX)
+		DECLARE @huyenBD NVARCHAR(MAX)
+		DECLARE @xaBD NVARCHAR(MAX)
+		DECLARE @chiTietBD NVARCHAR(MAX)
+		DECLARE @tinhKT NVARCHAR(MAX)
+		DECLARE @huyenKT NVARCHAR(MAX)
+		DECLARE @xaKT NVARCHAR(MAX)
+		DECLARE @chiTietKT NVARCHAR(MAX)
+		SELECT @tinhBD = tinhBD, @huyenBD = huyenBD, @xaBD = xaBD, @chiTietBD = chiTietBD FROM inserted;
+		SELECT @tinhKT = tinhKT, @huyenKT = huyenKT, @xaKT = xaKT, @chiTietKT = chiTietKT FROM inserted;
+
+        PRINT @huyenBD 
+        PRINT @huyenKT
+		IF @tinhBD = @tinhKT AND @huyenBD = @huyenKT AND @xaBD = @xaKT AND @chiTietBD = @chiTietKT
+            PRINT N'Điểm đầu và điểm cuối không thể trùng nhau';
+            ROLLBACK TRANSACTION;
+END;
+
+
+GO 
+CREATE OR ALTER TRIGGER trg_updateGiaHoaDon
+on DonHang
+AFTER INSERT, UPDATE, DELETE
+AS
+BEGIN
+    IF TRIGGER_NESTLEVEL() > 1
+        RETURN;
+	IF EXISTS (SELECT 1 FROM inserted)
+	BEGIN
+		UPDATE HD
+		SET HD.tongTien = HD.tongTien + ISNULL(TongPhiDichVu, 0)
+		FROM HoaDon HD
+		INNER JOIN (
+			SELECT 
+				DH.hoaDon,  
+				SUM(DH.gia) AS TongPhiDichVu
+			FROM inserted DH
+			GROUP BY DH.hoaDon
+		) DH 
+		ON DH.hoaDon = HD.maHoaDon;
+	END
+
+	IF EXISTS (SELECT 1 FROM deleted)
+	BEGIN 
+		UPDATE HD
+		SET HD.tongTien = HD.tongTien - ISNULL(TongPhiDichVu, 0)
+		FROM HoaDon HD
+		INNER JOIN (
+			SELECT 
+				DH.hoaDon,  
+				SUM(DH.gia) AS TongPhiDichVu
+			FROM deleted DH
+			GROUP BY DH.hoaDon
+		) DH 
+		ON DH.hoaDon = HD.maHoaDon;
 	END
 END;

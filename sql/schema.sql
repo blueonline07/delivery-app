@@ -1,3 +1,5 @@
+--function
+
 GO
 CREATE FUNCTION calc_age
 (
@@ -17,7 +19,8 @@ BEGIN
 END;
 GO
 
--- Cac bang lien quan den nguoi` dung, tram va cac thuc the vat ly khac
+
+--schema
 
 CREATE TABLE NguoiDung (
 	sdt CHAR(10) PRIMARY KEY, ---mobilephone only
@@ -47,7 +50,7 @@ CREATE TABLE BanBe(
 
 CREATE TABLE KhachHang (
     sdt CHAR(10) PRIMARY KEY,
-    CONSTRAINT customerPhone_fk FOREIGN KEY(sdt) REFERENCES NguoiDung(sdt) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT customerPhone_fk FOREIGN KEY(sdt) REFERENCES NguoiDung(sdt) ON DELETE CASCADE,
     xa NVARCHAR(MAX),
     huyen NVARCHAR(MAX),
     tinh NVARCHAR(MAX),
@@ -56,7 +59,7 @@ CREATE TABLE KhachHang (
 
 CREATE TABLE NhanVien (
     sdt CHAR(10) PRIMARY KEY,
-    CONSTRAINT employeePhone_fk FOREIGN KEY(sdt) REFERENCES NguoiDung(sdt) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT employeePhone_fk FOREIGN KEY(sdt) REFERENCES NguoiDung(sdt) ON DELETE CASCADE,
     luong INT,
     CONSTRAINT salary_check CHECK (luong >= 3000000), --min 3tr
     ngayBatDau DATE
@@ -66,32 +69,32 @@ CREATE TABLE TaiXe (
     sdt CHAR(10) PRIMARY KEY,
     kinhNghiem INT,
     CONSTRAINT driverExp_check CHECK (kinhNghiem >= 0),
-    CONSTRAINT phoneDriver_fk FOREIGN KEY(sdt) REFERENCES NhanVien(sdt) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT phoneDriver_fk FOREIGN KEY(sdt) REFERENCES NhanVien(sdt) ON DELETE CASCADE,
 );
 
 CREATE TABLE Xe (
     bienSo VARCHAR(10) PRIMARY KEY,
     taiXe CHAR(10) NOT NULL,
-    CONSTRAINT vehDriver_fk FOREIGN KEY(taiXe) REFERENCES TaiXe(sdt) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT vehDriver_fk FOREIGN KEY(taiXe) REFERENCES TaiXe(sdt) ON DELETE CASCADE,
 );
 
 CREATE TABLE BangLai (
-    sdt CHAR(10) NOT NULL,
+    taiXe CHAR(10) NOT NULL,
     loaiBang CHAR(2),
     ngayHetHan DATE,
-    CONSTRAINT license_check CHECK (loaiBang = 'A1' OR loaiBang = 'A2' OR loaiBang = 'B1' OR loaiBang = 'B2' OR loaiBang ='C1'), --con nua
-    PRIMARY KEY(sdt, loaiBang)
+    CONSTRAINT license_check CHECK (loaiBang IN('A1','A2','B1','B2','C1')), --con nua
+    PRIMARY KEY(taiXe, loaiBang)
 );
 
 CREATE TABLE NguoiQuanLy (
     sdt CHAR(10) PRIMARY KEY,
-    CONSTRAINT managerPhone_fk FOREIGN KEY(sdt) REFERENCES NhanVien(sdt) ON DELETE CASCADE ON UPDATE CASCADE
+    CONSTRAINT managerPhone_fk FOREIGN KEY(sdt) REFERENCES NhanVien(sdt) ON DELETE CASCADE
 );
 
 CREATE TABLE CapBac (
     nguoiQuanLy CHAR(10),
     capBac NVARCHAR(255),
-    CONSTRAINT mgrLevel_fk FOREIGN KEY(nguoiQuanLy) REFERENCES NguoiQuanLy(sdt) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT mgrLevel_fk FOREIGN KEY(nguoiQuanLy) REFERENCES NguoiQuanLy(sdt) ON DELETE CASCADE,
     PRIMARY KEY(nguoiQuanLy, capBac)
 );
 
@@ -110,14 +113,14 @@ CREATE TABLE Tram (
 CREATE TABLE TramLamViec(
     nhanVien CHAR(10) PRIMARY KEY,
     tram INT NOT NULL,
-    CONSTRAINT empWorkAt_fk FOREIGN KEY(nhanVien) REFERENCES NhanVien(sdt) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT empWorkAt_fk FOREIGN KEY(nhanVien) REFERENCES NhanVien(sdt) ON DELETE CASCADE,
     CONSTRAINT stationWorkAt_fk FOREIGN KEY(tram) REFERENCES Tram(stt) ON DELETE CASCADE
 );
 
 ---- cac bang lien quan den business logic (don hang, hoa don, ...)
 CREATE TABLE HoaDon (
     maHoaDon CHAR(10) PRIMARY KEY,
-    tongTien INT NOT NULL,
+    tongTien INT DEFAULT 0,
     CONSTRAINT totalCheck CHECK (tongTien >= 0),
     tinhTrang NVARCHAR(MAX) DEFAULT N'Chưa thanh toán',
     CONSTRAINT billStt_check CHECK (tinhTrang = N'Đã thanh toán' OR tinhTrang = N'Chưa thanh toán' OR tinhTrang = N'Đã huỷ')
@@ -126,7 +129,7 @@ CREATE TABLE HoaDon (
 CREATE TABLE DonHang (
     maDonHang CHAR(10) PRIMARY KEY,        
     nguoiTaoDon CHAR(10),
-    CONSTRAINT cusOrder_fk FOREIGN KEY(nguoiTaoDon) REFERENCES KhachHang(sdt) ON DELETE CASCADE ON UPDATE CASCADE,           
+    CONSTRAINT cusOrder_fk FOREIGN KEY(nguoiTaoDon) REFERENCES KhachHang(sdt) ON DELETE CASCADE,           
     sdtNguoiNhan CHAR(10) NOT NULL,
     hoTenNguoiNhan NVARCHAR(MAX) NOT NULL,     
     tinhTrang NVARCHAR(MAX) DEFAULT N'Đang giao', 
@@ -218,15 +221,137 @@ CREATE TABLE GiaoDich(
 );
 
 
+-- trigger
+
+GO
+CREATE OR ALTER TRIGGER friend_check
+ON BanBe
+AFTER INSERT
+AS
+BEGIN
+		IF TRIGGER_NESTLEVEL() > 1
+				RETURN;
+		DECLARE @ngDung1 CHAR(10), @ngDung2 CHAR(10);
+		SELECT @ngDung1 = ngDung1, @ngDung2 = ngDung2 FROM inserted;
+		IF @ngDung1 = @ngDung2
+		BEGIN
+				PRINT N'Không thể kết bạn với chính mình';
+				ROLLBACK TRANSACTION;
+		END
+END;
 
 
--- USE master;
--- DECLARE @sql NVARCHAR(MAX) = N'';
+GO 
+CREATE OR ALTER TRIGGER manager_check
+ON Tram
+AFTER INSERT
+AS
+BEGIN
+		IF TRIGGER_NESTLEVEL() > 1
+				RETURN;
+		DECLARE @sdt CHAR(10);
+		DECLARE @tram INT;
+		SELECT @sdt = nguoiQuanLy, @tram = stt FROM inserted;
 
--- SELECT @sql += 'KILL ' + CAST(session_id AS NVARCHAR(10)) + ';' + CHAR(13)
--- FROM sys.dm_exec_sessions
--- WHERE database_id = DB_ID('delivery');
+		IF NOT EXISTS (SELECT 1 FROM TramLamViec WHERE nhanVien = @sdt AND tram = @tram)
+		BEGIN
+				PRINT N'Người quản lý không làm việc ở trạm này';
+				ROLLBACK TRANSACTION;
+		END
+END;
+GO
+CREATE OR ALTER TRIGGER route_check
+ON Tuyen
+AFTER INSERT
+AS
+BEGIN
+		IF TRIGGER_NESTLEVEL() > 1
+				RETURN;
+		DECLARE @tinhBD NVARCHAR(MAX)
+		DECLARE @huyenBD NVARCHAR(MAX)
+		DECLARE @xaBD NVARCHAR(MAX)
+		DECLARE @chiTietBD NVARCHAR(MAX)
+		DECLARE @tinhKT NVARCHAR(MAX)
+		DECLARE @huyenKT NVARCHAR(MAX)
+		DECLARE @xaKT NVARCHAR(MAX)
+		DECLARE @chiTietKT NVARCHAR(MAX)
+		SELECT @tinhBD = tinhBD, @huyenBD = huyenBD, @xaBD = xaBD, @chiTietBD = chiTietBD FROM inserted;
+		SELECT @tinhKT = tinhKT, @huyenKT = huyenKT, @xaKT = xaKT, @chiTietKT = chiTietKT FROM inserted;
 
--- EXEC sp_executesql @sql;
+        PRINT @huyenBD 
+        PRINT @huyenKT
+		IF @tinhBD = @tinhKT AND @huyenBD = @huyenKT AND @xaBD = @xaKT AND @chiTietBD = @chiTietKT
+            PRINT N'Điểm đầu và điểm cuối không thể trùng nhau';
+            ROLLBACK TRANSACTION;
+END;
 
--- DROP DATABASE delivery;
+GO
+CREATE OR ALTER TRIGGER trg_CheckGiaoDich
+ON GiaoDich
+AFTER INSERT, UPDATE
+AS
+BEGIN
+    IF TRIGGER_NESTLEVEL() > 1
+        RETURN;
+
+    IF EXISTS (SELECT 1 FROM inserted)
+	BEGIN
+		IF EXISTS(
+			SELECT 1
+			FROM HoaDon H
+			JOIN inserted I ON H.maHoaDon = I.hoaDon
+			WHERE H.tinhTrang = N'Đã thanh toán' or H.tinhTrang = N'Đã hủy'
+		)
+		BEGIN
+			PRINT N'Bạn không thể giao dịch nữa.';
+			ROLLBACK TRANSACTION;
+		END
+		
+		IF EXISTS(
+			SELECT 1
+			FROM inserted I
+			WHERE I.tinhTrang = N'Thành công'
+		)
+		BEGIN
+			PRINT N'Bạn đã thanh toán thành công';
+			UPDATE HD
+			SET HD.tinhTrang = N'Đã Thanh Toán'
+			FROM HoaDon HD
+			JOIN inserted I ON I.hoaDon = HD.maHoaDon
+		END
+		
+		IF EXISTS (
+			SELECT 1
+			FROM inserted I
+			JOIN GiaoDich GD ON I.hoaDon = GD.hoaDon
+			WHERE I.tinhTrang = N'Thất bại'
+			GROUP BY I.hoaDon
+			HAVING COUNT(GD.hoaDon) >= 3
+		)
+		BEGIN
+			PRINT N'Bạn không thể giao dịch nữa. Đơn hàng bị hủy.';
+			UPDATE HD
+			SET HD.tinhTrang = N'Đã Hủy'
+			FROM HoaDon HD
+			JOIN inserted I ON I.hoaDon = HD.maHoaDon;
+
+			DELETE GD
+			FROM GiaoDich GD
+			JOIN inserted I ON GD.hoaDon = I.hoaDon;
+		END
+		END
+	END;
+
+
+
+
+    -- USE master;
+    -- DECLARE @sql NVARCHAR(MAX) = N'';
+
+    -- SELECT @sql += 'KILL ' + CAST(session_id AS NVARCHAR(10)) + ';' + CHAR(13)
+    -- FROM sys.dm_exec_sessions
+    -- WHERE database_id = DB_ID('delivery');
+
+    -- EXEC sp_executesql @sql;
+
+    -- DROP DATABASE delivery;
