@@ -252,37 +252,37 @@ BEGIN
 		DECLARE @sdt CHAR(10);
 		DECLARE @tram INT;
 		SELECT @sdt = nguoiQuanLy, @tram = stt FROM inserted;
-
-		IF NOT EXISTS (SELECT 1 FROM TramLamViec WHERE nhanVien = @sdt AND tram = @tram)
-		BEGIN
-				PRINT N'Người quản lý không làm việc ở trạm này';
-				ROLLBACK TRANSACTION;
-		END
+        IF @sdt != NULL
+            IF NOT EXISTS (SELECT 1 FROM TramLamViec WHERE nhanVien = @sdt AND tram = @tram)
+            BEGIN
+                    PRINT N'Người quản lý không làm việc ở trạm này';
+                    ROLLBACK TRANSACTION;
+            END
 END;
+
 GO
 CREATE OR ALTER TRIGGER route_check
 ON Tuyen
 AFTER INSERT
 AS
 BEGIN
-		IF TRIGGER_NESTLEVEL() > 1
-				RETURN;
-		DECLARE @tinhBD NVARCHAR(MAX)
-		DECLARE @huyenBD NVARCHAR(MAX)
-		DECLARE @xaBD NVARCHAR(MAX)
-		DECLARE @chiTietBD NVARCHAR(MAX)
-		DECLARE @tinhKT NVARCHAR(MAX)
-		DECLARE @huyenKT NVARCHAR(MAX)
-		DECLARE @xaKT NVARCHAR(MAX)
-		DECLARE @chiTietKT NVARCHAR(MAX)
-		SELECT @tinhBD = tinhBD, @huyenBD = huyenBD, @xaBD = xaBD, @chiTietBD = chiTietBD FROM inserted;
-		SELECT @tinhKT = tinhKT, @huyenKT = huyenKT, @xaKT = xaKT, @chiTietKT = chiTietKT FROM inserted;
+    -- Avoid nested trigger execution
+    IF TRIGGER_NESTLEVEL() > 1
+        RETURN;
 
-        PRINT @huyenBD 
-        PRINT @huyenKT
-		IF @tinhBD = @tinhKT AND @huyenBD = @huyenKT AND @xaBD = @xaKT AND @chiTietBD = @chiTietKT
-            PRINT N'Điểm đầu và điểm cuối không thể trùng nhau';
-            ROLLBACK TRANSACTION;
+    -- Check for duplicates in all rows in the inserted table
+    IF EXISTS (
+        SELECT 1
+        FROM inserted
+        WHERE tinhBD = tinhKT
+          AND huyenBD = huyenKT
+          AND xaBD = xaKT
+          AND chiTietBD = chiTietKT
+    )
+    BEGIN
+        PRINT N'Điểm đầu và điểm cuối không thể trùng nhau';
+        ROLLBACK TRANSACTION;
+    END
 END;
 
 GO
@@ -376,6 +376,7 @@ BEGIN
         ROLLBACK TRANSACTION;
     END
 END;
+
 
 
     -- USE master;

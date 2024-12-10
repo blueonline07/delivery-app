@@ -1,8 +1,6 @@
-
--- Trigger update giá gói hàng
 CREATE OR ALTER TRIGGER trg_UpdateGia
 ON DuocGan
-AFTER INSERT,  DELETE
+AFTER INSERT, UPDATE, DELETE
 AS
 BEGIN
     IF TRIGGER_NESTLEVEL() > 1
@@ -10,14 +8,14 @@ BEGIN
 	IF EXISTS (SELECT 1 FROM inserted)
 	BEGIN
 		UPDATE GH
-		SET GH.gia = GH.canNang * 1 + ISNULL(TongPhiDichVu, 0)
+		SET GH.gia = GH.gia  + ISNULL(TongPhiDichVu, 0)
 		FROM GoiHang GH
 		INNER JOIN (
 			SELECT 
 				DG.donHang, 
 				DG.GoiHang, 
 				SUM(NhanGoiHang.PhiDichVu) AS TongPhiDichVu
-			FROM DuocGan DG
+			FROM inserted DG
 			INNER JOIN NhanGoiHang ON DG.maNhan = NhanGoiHang.maNhan
 			GROUP BY DG.donHang, DG.GoiHang  
 		) DG 
