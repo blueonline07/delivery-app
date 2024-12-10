@@ -249,3 +249,68 @@ BEGIN
 				ROLLBACK TRANSACTION;
 		END
 END;
+GO
+CREATE OR ALTER TRIGGER route_check
+ON Tuyen
+AFTER INSERT
+AS
+BEGIN
+		IF TRIGGER_NESTLEVEL() > 1
+				RETURN;
+		DECLARE @tinhBD NVARCHAR(MAX)
+		DECLARE @huyenBD NVARCHAR(MAX)
+		DECLARE @xaBD NVARCHAR(MAX)
+		DECLARE @chiTietBD NVARCHAR(MAX)
+		DECLARE @tinhKT NVARCHAR(MAX)
+		DECLARE @huyenKT NVARCHAR(MAX)
+		DECLARE @xaKT NVARCHAR(MAX)
+		DECLARE @chiTietKT NVARCHAR(MAX)
+		SELECT @tinhBD = tinhBD, @huyenBD = huyenBD, @xaBD = xaBD, @chiTietBD = chiTietBD FROM inserted;
+		SELECT @tinhKT = tinhKT, @huyenKT = huyenKT, @xaKT = xaKT, @chiTietKT = chiTietKT FROM inserted;
+
+        PRINT @huyenBD 
+        PRINT @huyenKT
+		IF @tinhBD = @tinhKT AND @huyenBD = @huyenKT AND @xaBD = @xaKT AND @chiTietBD = @chiTietKT
+            PRINT N'Điểm đầu và điểm cuối không thể trùng nhau';
+            ROLLBACK TRANSACTION;
+END;
+
+
+GO 
+CREATE OR ALTER TRIGGER trg_updateGiaHoaDon
+on DonHang
+AFTER INSERT, UPDATE, DELETE
+AS
+BEGIN
+    IF TRIGGER_NESTLEVEL() > 1
+        RETURN;
+	IF EXISTS (SELECT 1 FROM inserted)
+	BEGIN
+		UPDATE HD
+		SET HD.tongTien = HD.tongTien + ISNULL(TongPhiDichVu, 0)
+		FROM HoaDon HD
+		INNER JOIN (
+			SELECT 
+				DH.hoaDon,  
+				SUM(DH.gia) AS TongPhiDichVu
+			FROM inserted DH
+			GROUP BY DH.hoaDon
+		) DH 
+		ON DH.hoaDon = HD.maHoaDon;
+	END
+
+	IF EXISTS (SELECT 1 FROM deleted)
+	BEGIN 
+		UPDATE HD
+		SET HD.tongTien = HD.tongTien - ISNULL(TongPhiDichVu, 0)
+		FROM HoaDon HD
+		INNER JOIN (
+			SELECT 
+				DH.hoaDon,  
+				SUM(DH.gia) AS TongPhiDichVu
+			FROM deleted DH
+			GROUP BY DH.hoaDon
+		) DH 
+		ON DH.hoaDon = HD.maHoaDon;
+	END
+END;
