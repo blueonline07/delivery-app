@@ -110,7 +110,9 @@ CREATE TABLE DonHang (
     xa NVARCHAR(20) NOT NULL,           
     huyen NVARCHAR(20) NOT NULL,             
     tinh NVARCHAR(20) NOT NULL,              
-    chiTiet NVARCHAR(30)            
+    chiTiet NVARCHAR(30),
+    hoaDon CHAR(10),
+    CONSTRAINT bill_fk FOREIGN KEY(hoaDon) REFERENCES HoaDon(maHoaDon) ON DELETE SET NULL
 );
 
 -- SELECT * FROM DonHang;
@@ -197,13 +199,6 @@ CREATE TABLE GiaoDich(
     CONSTRAINT transMethod_check CHECK (phuongThuc = N'Tiền mặt' OR phuongThuc = N'Thẻ' OR phuongThuc = N'Chuyển khoản'),
     tinhTrang NVARCHAR(10),
     CONSTRAINT transStt_check CHECK (tinhTrang = N'Thành công' OR tinhTrang = N'Thất bại')
-);
-
-CREATE TABLE ThanhToan ( 
-    hoaDon CHAR(10) NOT NULL,
-    donHang CHAR(10) NOT NULL,
-    CONSTRAINT bill_fk FOREIGN KEY (hoaDon) REFERENCES HoaDon(maHoaDon) ON DELETE CASCADE,
-    CONSTRAINT ord_fk FOREIGN KEY (donHang) REFERENCES DonHang(maDonHang) ON DELETE CASCADE
 );
 
 
