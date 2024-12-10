@@ -1,16 +1,22 @@
 import express from 'express';
 import sql from 'mssql';
 import { pool } from '../db.js';
-import crypto from 'crypto';
+import crypto, { hash } from 'crypto';
 
 const secret = 'haha'
 
 const router = express.Router();
 
-router.post('/', async (req, res) => {
+function hashPasswordSQLStyle(password, secret) {
+  // Use UTF-16LE encoding to match SQL Server's NVARCHAR
+  const combined = Buffer.from(password + secret, 'utf16le');
+  return crypto.createHash('sha256').update(combined).digest('hex');
+}
+
+router.post('', async (req, res) => {
   const { phone, password } = req.body;
   try {
-    const hash = crypto.createHmac('sha256', secret).update(password).digest('hex');
+    const hash = hashPasswordSQLStyle(password, secret);
     const { recordset } = await pool
       .request()
       .input('sdt', sql.NVarChar, phone)

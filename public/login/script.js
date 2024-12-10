@@ -36,7 +36,7 @@ document.getElementById("login-form").addEventListener("submit", function (e) {
     };
 
     // Send POST request to backend
-    fetch(api + "/login/", {
+    fetch(api + "/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
