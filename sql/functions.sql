@@ -51,3 +51,47 @@ BEGIN
     DEALLOCATE cur;
     RETURN;
 END;
+
+
+
+CREATE FUNCTION dbo.TinhSoGoiHangNhieuNhan (
+    @maDonHang CHAR(10), @soluong INT
+)
+RETURNS INT
+AS
+BEGIN
+    DECLARE @soGoiHang INT = 0;
+    DECLARE @goiHang CHAR(10);
+    DECLARE @maNhanList TABLE (maNhan CHAR(3));
+    
+    DECLARE cur CURSOR FOR
+    SELECT goiHang
+    FROM DuocGan
+    WHERE donHang = @maDonHang
+    GROUP BY goiHang;
+    
+    OPEN cur;
+    FETCH NEXT FROM cur INTO @goiHang;
+    
+    WHILE @@FETCH_STATUS = 0
+    BEGIN
+        
+        INSERT INTO @maNhanList
+        SELECT maNhan
+        FROM DuocGan
+        WHERE donHang = @maDonHang AND goiHang = @goiHang;
+        IF (SELECT COUNT(*) FROM @maNhanList) > @soluong
+        BEGIN
+            SET @soGoiHang = @soGoiHang + 1;
+        END
+        DELETE FROM @maNhanList;
+        
+        FETCH NEXT FROM cur INTO @goiHang;
+    END
+    
+    CLOSE cur;
+    DEALLOCATE cur;
+    
+    RETURN @soGoiHang;
+END;
+GO
