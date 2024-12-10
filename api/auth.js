@@ -11,7 +11,7 @@ router.post('', async (req, res) => {
   try {
 
     const hash = crypto.createHash('sha256').update(password).digest('hex');
-    console.log(hash)
+
     const { recordset } = await pool
       .request()
       .input('sdt', sql.NVarChar, phone)
