@@ -112,22 +112,6 @@ BEGIN
 		END
 	END;
 
--- GO
--- CREATE OR ALTER TRIGGER hash_password
--- ON NguoiDung
--- AFTER INSERT, UPDATE
--- AS
--- BEGIN
---     DECLARE @password NVARCHAR(255);
-
---     SELECT @password = matKhau FROM inserted;
-
---     UPDATE NguoiDung SET matKhau = CONVERT(VARCHAR(64), HASHBYTES('SHA2-256', @password), 2)
---     FROM NguoiDung
---     INNER JOIN inserted ON NguoiDung.sdt = inserted.sdt;
--- END;
-
-
 
 GO
 
@@ -168,7 +152,7 @@ BEGIN
 		ON DH.maDonHang = T.donHang;
 	END
 END;
-
+GO
 
 CREATE OR ALTER TRIGGER trg_HashNguoiDungPassword
 ON NguoiDung
@@ -177,13 +161,10 @@ AS
 BEGIN
     SET NOCOUNT ON;
 
-    -- Secret key
-    DECLARE @Secret NVARCHAR(10) = 'haha';
-
     -- Update the hashed password, ensuring UTF-8 encoding
     UPDATE N
     SET N.matKhau = CONVERT(VARCHAR(64), 
-        HASHBYTES('SHA2_256', CAST(I.matKhau AS VARBINARY(MAX)) + CAST(@Secret AS VARBINARY(MAX))), 2)
+        HASHBYTES('SHA2_256', CAST(I.matKhau AS VARBINARY(MAX))), 2)
     FROM NguoiDung N
     INNER JOIN inserted I
     ON N.sdt = I.sdt;
@@ -230,4 +211,41 @@ BEGIN
 		) GH 
 		ON DH.maDonHang = GH.donHang;
 	END
+END;
+
+GO
+CREATE OR ALTER TRIGGER friend_check
+ON BanBe
+AFTER INSERT
+AS
+BEGIN
+		IF TRIGGER_NESTLEVEL() > 1
+				RETURN;
+		DECLARE @ngDung1 CHAR(10), @ngDung2 CHAR(10);
+		SELECT @ngDung1 = ngDung1, @ngDung2 = ngDung2 FROM inserted;
+		IF @ngDung1 = @ngDung2
+		BEGIN
+				PRINT N'Không thể kết bạn với chính mình';
+				ROLLBACK TRANSACTION;
+		END
+END;
+
+
+GO 
+CREATE OR ALTER TRIGGER manager_check
+ON Tram
+AFTER INSERT
+AS
+BEGIN
+		IF TRIGGER_NESTLEVEL() > 1
+				RETURN;
+		DECLARE @sdt CHAR(10);
+		DECLARE @tram INT;
+		SELECT @sdt = nguoiQuanLy, @tram = stt FROM inserted;
+
+		IF NOT EXISTS (SELECT 1 FROM TramLamViec WHERE nhanVien = @sdt AND tram = @tram)
+		BEGIN
+				PRINT N'Người quản lý không làm việc ở trạm này';
+				ROLLBACK TRANSACTION;
+		END
 END;

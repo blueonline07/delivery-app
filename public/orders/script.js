@@ -48,6 +48,6 @@ $(document).ready(function () {
     clearTimeout(hoverTimeout); // Clear the timeout if mouse leaves before the delay
     hoverInfo.fadeOut();
   });
-
 });
+
 
