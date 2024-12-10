@@ -53,6 +53,9 @@
     <table id="example" class="display table table-striped table-bordered mt-5 wrapper">
       <thead>
         <tr>
+          <th class="checkbox-column">
+            <input type="checkbox" id="selectAll">
+          </th>
           <th>OrderID</th>
           <th>Receiver</th>
           <th>Province</th>
@@ -62,9 +65,14 @@
           <th>Status</th>
         </tr>
       </thead>
+      <tbody id="orderList">
+        <!-- Data rows will be dynamically added here -->
+      </tbody>
     </table>
-    <a href="/orders/create" class="btn btn-primary">Create New Order</a>
-    <a href="/payment/bill" class="btn btn-primary">Payment</a>
+    <div class="d-flex justify-content-between mb-3">
+      <a href="/orders/create" class="btn btn-primary" >Create New Order</a>
+      <a href="/payment/bill" class="btn btn-primary" style="background-color: green;">Payment</a>
+    </div>
 
     
   </div>

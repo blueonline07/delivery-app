@@ -1,6 +1,6 @@
 CREATE OR ALTER PROC insert_order
     @user CHAR(10), @rcv_phone CHAR(10), @rcv_name NVARCHAR(MAX),
-    @tinh NVARCHAR(MAX),@xa NVARCHAR(MAX),@huyen NVARCHAR(MAX),  @chiTiet NVARCHAR(MAX)
+    @tinh NVARCHAR(MAX),@xa NVARCHAR(MAX),@huyen NVARCHAR(MAX),  @chiTiet NVARCHAR(MAX), @NewID CHAR(10) OUTPUT
 AS
 BEGIN TRY
     -- Validate phone number: must be 10 digits and only numeric
@@ -32,6 +32,7 @@ BEGIN TRY
     -- Insert into DonHang table
     INSERT INTO DonHang (maDonHang, nguoiTaoDon, sdtNguoiNhan, hoTenNguoiNhan, xa, huyen, tinh, chiTiet)
     VALUES (@id, @user, @rcv_phone, @rcv_name, @xa, @huyen, @tinh, @chiTiet);
+    SET @NewID = @id;
 END TRY
 BEGIN CATCH
     PRINT ERROR_MESSAGE();
@@ -43,7 +44,7 @@ END CATCH;
 
 GO
 CREATE OR ALTER PROCEDURE update_order
-    @id CHAR(10), @rcv_phone CHAR(10), @rcv_name NVARCHAR(MAX), @xa NVARCHAR(MAX), @huyen NVARCHAR(MAX), @tinh NVARCHAR(MAX), @chiTiet NVARCHAR(MAX)
+    @id CHAR(10), @rcv_phone CHAR(10), @rcv_name NVARCHAR(MAX) , @tinh NVARCHAR(MAX), @huyen NVARCHAR(MAX), @xa NVARCHAR(MAX), @chiTiet NVARCHAR(MAX)
 AS
 BEGIN TRY
     IF @id = '' OR @id NOT LIKE 'DH[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]'
@@ -129,3 +130,44 @@ BEGIN
         N'@user NVARCHAR(MAX), @searchValue NVARCHAR(MAX), @start INT, @length INT', 
         @user, @searchValue, @start, @length;
 END;
+
+
+
+
+GO
+CREATE OR ALTER PROCEDURE add_pkg
+    @order CHAR(10), @description NVARCHAR(MAX), @weight INT, @labels VARCHAR(MAX)
+AS
+BEGIN TRY
+    IF NOT EXISTS (SELECT 1 FROM DonHang WHERE maDonHang = @order)
+        THROW 50000, N'Mã đơn hàng không tồn tại', 1
+    IF TRY_CAST(@weight AS INT) IS NULL
+        THROW 50001, N'Cân nặng không hợp lệ', 1
+    IF @weight <= 0
+        THROW 50001, N'Cân nặng phải lớn hơn 0', 1
+
+    DECLARE @id INT;
+    SELECT @id = ISNULL(MAX(stt), 0) + 1 FROM GoiHang WHERE donHang = @order;
+
+    INSERT INTO GoiHang(donHang, stt, moTa,  canNang, gia) VALUES (@order, @id,@description , @weight, @weight);
+    -- Tinh tien
+    DECLARE @price INT;
+    DECLARE @val CHAR(3);
+    DECLARE label_cur CURSOR FOR SELECT value FROM string_split(@labels, ',');
+    OPEN label_cur;
+
+    FETCH NEXT FROM label_cur INTO @val;
+
+    WHILE @@FETCH_STATUS = 0
+    BEGIN
+        INSERT INTO DuocGan VALUES (@order, @id, @val) 
+        FETCH NEXT FROM label_cur INTO @val;
+    END
+
+    CLOSE label_cur;
+    DEALLOCATE label_cur;
+
+END TRY
+BEGIN CATCH
+    PRINT ERROR_MESSAGE()
+END CATCH

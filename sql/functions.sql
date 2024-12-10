@@ -51,6 +51,3 @@ BEGIN
     DEALLOCATE cur;
     RETURN;
 END;
-
-
-CREATE OR ALTER FUNCTION bill_filter

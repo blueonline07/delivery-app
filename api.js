@@ -8,7 +8,7 @@ import RouteRouter from './api/routes.js';
 const app = express();
 const port = 8080;
 
-// Middleware
+// // Middleware
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
