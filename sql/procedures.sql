@@ -44,7 +44,7 @@ END CATCH;
 
 GO
 CREATE OR ALTER PROCEDURE update_order
-    @id CHAR(10), @rcv_phone CHAR(10), @rcv_name NVARCHAR(MAX), @xa NVARCHAR(MAX), @huyen NVARCHAR(MAX), @tinh NVARCHAR(MAX), @chiTiet NVARCHAR(MAX)
+    @id CHAR(10), @rcv_phone CHAR(10), @rcv_name NVARCHAR(MAX) , @tinh NVARCHAR(MAX), @huyen NVARCHAR(MAX), @xa NVARCHAR(MAX), @chiTiet NVARCHAR(MAX)
 AS
 BEGIN TRY
     IF @id = '' OR @id NOT LIKE 'DH[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]'

@@ -51,7 +51,9 @@ BEGIN
     DEALLOCATE cur;
     RETURN;
 END;
--- Dem so goi hang nhieu hon n nhan
+
+
+
 CREATE FUNCTION dbo.TinhSoGoiHangNhieuNhan (
     @maDonHang CHAR(10), @soluong INT
 )

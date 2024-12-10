@@ -3,14 +3,15 @@ import sql from 'mssql';
 import { pool } from '../db.js';
 import crypto from 'crypto';
 
-const secret = 'haha'
 
 const router = express.Router();
 
 router.post('', async (req, res) => {
   const { phone, password } = req.body;
   try {
-    const hash = crypto.createHmac('sha256', secret).update(password).digest('hex');
+
+    const hash = crypto.createHash('sha256').update(password).digest('hex');
+    console.log(hash)
     const { recordset } = await pool
       .request()
       .input('sdt', sql.NVarChar, phone)

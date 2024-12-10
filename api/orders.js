@@ -79,4 +79,29 @@ router.post("/", async (req, res) => {
   }
 });
 
+router.put("/:id/", async (req, res) => {
+  const { id } = req.params;
+  const { receiverPhone, receiver, province, district, commune, detail } = req.body;
+  try {
+    await pool
+      .request()
+      .input("id", sql.NVarChar, id)
+      .input("receiverPhone", sql.NVarChar, receiverPhone)
+      .input("receiver", sql.NVarChar, receiver)
+      .input("province", sql.NVarChar, province)
+      .input("district", sql.NVarChar, district)
+      .input("commune", sql.NVarChar, commune)
+      .input("detail", sql.NVarChar, detail)
+      .query(
+        "EXEC update_order @id, @receiverPhone, @receiver, @province, @district, @commune, @detail"
+      );
+
+    res.json({ message: "Order updated successfully!" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+
 export default router;
