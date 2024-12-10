@@ -213,7 +213,7 @@ CREATE TABLE GiaoDich(
     hoaDon CHAR(10) NOT NULL,
     CONSTRAINT transBill_fk FOREIGN KEY(hoaDon) REFERENCES HoaDon(maHoaDon) ON DELETE CASCADE,
     soTien INT NOT NULL,
-    thoiDiem DATETIME NOT NULL,
+    thoiDiem DATETIME DEFAULT GETDATE(),
     phuongThuc NVARCHAR(MAX),
     CONSTRAINT transMethod_check CHECK (phuongThuc = N'Tiền mặt' OR phuongThuc = N'Thẻ' OR phuongThuc = N'Chuyển khoản'),
     tinhTrang NVARCHAR(MAX),
@@ -342,7 +342,40 @@ BEGIN
 		END
 	END;
 
+GO
+CREATE OR ALTER TRIGGER trg_HashNguoiDungPassword
+ON NguoiDung
+AFTER INSERT, UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON;
 
+    -- Update the hashed password, ensuring UTF-8 encoding
+    UPDATE N
+    SET N.matKhau = CONVERT(VARCHAR(64), 
+        HASHBYTES('SHA2_256', CAST(I.matKhau AS VARBINARY(MAX))), 2)
+    FROM NguoiDung N
+    INNER JOIN inserted I
+    ON N.sdt = I.sdt;
+END;
+GO
+
+CREATE OR ALTER TRIGGER phone_check
+ON DonHang
+AFTER INSERT
+AS
+BEGIN
+    IF TRIGGER_NESTLEVEL() > 1
+        RETURN;
+    DECLARE @sdt CHAR(10);
+    DECLARE @nguoiTao CHAR(10);
+    SELECT @sdt = sdtNguoiNhan, @nguoiTao = nguoiTaoDon FROM inserted;
+    IF @sdt = @nguoiTao
+    BEGIN
+        PRINT N'Không thể giao hàng cho chính mình';
+        ROLLBACK TRANSACTION;
+    END
+END;
 
 
     -- USE master;
