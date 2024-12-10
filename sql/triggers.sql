@@ -65,17 +65,6 @@ BEGIN
 			PRINT N'Bạn không thể giao dịch nữa.';
 			ROLLBACK TRANSACTION;
 		END
-		IF EXISTS (
-			SELECT 1
-			FROM GiaoDich GD
-			JOIN inserted I ON I.hoaDon = GD.hoaDon
-			GROUP BY I.hoaDon
-			HAVING COUNT(GD.hoaDon) > 3
-		)
-		BEGIN
-			PRINT N'Bạn không thể giao dịch nữa. Đơn hàng đã đạt giới hạn giao dịch.';
-			ROLLBACK TRANSACTION;
-		END
 		
 		IF EXISTS(
 			SELECT 1

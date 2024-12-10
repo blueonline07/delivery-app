@@ -1,3 +1,5 @@
+--function
+
 GO
 CREATE FUNCTION calc_age
 (
@@ -17,7 +19,8 @@ BEGIN
 END;
 GO
 
--- Cac bang lien quan den nguoi` dung, tram va cac thuc the vat ly khac
+
+--schema
 
 CREATE TABLE NguoiDung (
 	sdt CHAR(10) PRIMARY KEY, ---mobilephone only
@@ -216,6 +219,128 @@ CREATE TABLE GiaoDich(
     tinhTrang NVARCHAR(MAX),
     CONSTRAINT transStt_check CHECK (tinhTrang = N'Thành công' OR tinhTrang = N'Thất bại')
 );
+
+
+-- trigger
+
+GO
+CREATE OR ALTER TRIGGER friend_check
+ON BanBe
+AFTER INSERT
+AS
+BEGIN
+		IF TRIGGER_NESTLEVEL() > 1
+				RETURN;
+		DECLARE @ngDung1 CHAR(10), @ngDung2 CHAR(10);
+		SELECT @ngDung1 = ngDung1, @ngDung2 = ngDung2 FROM inserted;
+		IF @ngDung1 = @ngDung2
+		BEGIN
+				PRINT N'Không thể kết bạn với chính mình';
+				ROLLBACK TRANSACTION;
+		END
+END;
+
+
+GO 
+CREATE OR ALTER TRIGGER manager_check
+ON Tram
+AFTER INSERT
+AS
+BEGIN
+		IF TRIGGER_NESTLEVEL() > 1
+				RETURN;
+		DECLARE @sdt CHAR(10);
+		DECLARE @tram INT;
+		SELECT @sdt = nguoiQuanLy, @tram = stt FROM inserted;
+
+		IF NOT EXISTS (SELECT 1 FROM TramLamViec WHERE nhanVien = @sdt AND tram = @tram)
+		BEGIN
+				PRINT N'Người quản lý không làm việc ở trạm này';
+				ROLLBACK TRANSACTION;
+		END
+END;
+GO
+CREATE OR ALTER TRIGGER route_check
+ON Tuyen
+AFTER INSERT
+AS
+BEGIN
+		IF TRIGGER_NESTLEVEL() > 1
+				RETURN;
+		DECLARE @tinhBD NVARCHAR(MAX)
+		DECLARE @huyenBD NVARCHAR(MAX)
+		DECLARE @xaBD NVARCHAR(MAX)
+		DECLARE @chiTietBD NVARCHAR(MAX)
+		DECLARE @tinhKT NVARCHAR(MAX)
+		DECLARE @huyenKT NVARCHAR(MAX)
+		DECLARE @xaKT NVARCHAR(MAX)
+		DECLARE @chiTietKT NVARCHAR(MAX)
+		SELECT @tinhBD = tinhBD, @huyenBD = huyenBD, @xaBD = xaBD, @chiTietBD = chiTietBD FROM inserted;
+		SELECT @tinhKT = tinhKT, @huyenKT = huyenKT, @xaKT = xaKT, @chiTietKT = chiTietKT FROM inserted;
+
+        PRINT @huyenBD 
+        PRINT @huyenKT
+		IF @tinhBD = @tinhKT AND @huyenBD = @huyenKT AND @xaBD = @xaKT AND @chiTietBD = @chiTietKT
+            PRINT N'Điểm đầu và điểm cuối không thể trùng nhau';
+            ROLLBACK TRANSACTION;
+END;
+
+GO
+CREATE OR ALTER TRIGGER trg_CheckGiaoDich
+ON GiaoDich
+AFTER INSERT, UPDATE
+AS
+BEGIN
+    IF TRIGGER_NESTLEVEL() > 1
+        RETURN;
+
+    IF EXISTS (SELECT 1 FROM inserted)
+	BEGIN
+		IF EXISTS(
+			SELECT 1
+			FROM HoaDon H
+			JOIN inserted I ON H.maHoaDon = I.hoaDon
+			WHERE H.tinhTrang = N'Đã thanh toán' or H.tinhTrang = N'Đã hủy'
+		)
+		BEGIN
+			PRINT N'Bạn không thể giao dịch nữa.';
+			ROLLBACK TRANSACTION;
+		END
+		
+		IF EXISTS(
+			SELECT 1
+			FROM inserted I
+			WHERE I.tinhTrang = N'Thành công'
+		)
+		BEGIN
+			PRINT N'Bạn đã thanh toán thành công';
+			UPDATE HD
+			SET HD.tinhTrang = N'Đã Thanh Toán'
+			FROM HoaDon HD
+			JOIN inserted I ON I.hoaDon = HD.maHoaDon
+		END
+		
+		IF EXISTS (
+			SELECT 1
+			FROM inserted I
+			JOIN GiaoDich GD ON I.hoaDon = GD.hoaDon
+			WHERE I.tinhTrang = N'Thất bại'
+			GROUP BY I.hoaDon
+			HAVING COUNT(GD.hoaDon) >= 3
+		)
+		BEGIN
+			PRINT N'Bạn không thể giao dịch nữa. Đơn hàng bị hủy.';
+			UPDATE HD
+			SET HD.tinhTrang = N'Đã Hủy'
+			FROM HoaDon HD
+			JOIN inserted I ON I.hoaDon = HD.maHoaDon;
+
+			DELETE GD
+			FROM GiaoDich GD
+			JOIN inserted I ON GD.hoaDon = I.hoaDon;
+		END
+		END
+	END;
 
 
 
